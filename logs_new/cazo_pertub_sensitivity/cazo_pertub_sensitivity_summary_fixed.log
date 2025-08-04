@@ -1,0 +1,20 @@
+Extracting results from completed pertub sensitivity experiments...
+Format: pertub=X: accuracy=Y.YY%, ece=Z.ZZ%
+============================================
+pertub=2: accuracy=59.26799774169922%, ece=4.6624763974249355%
+pertub=4: accuracy=61.03399658203125%, ece=4.144902949601411%
+pertub=6: accuracy=61.477996826171875%, ece=3.6127954267561435%
+pertub=8: accuracy=61.763999938964844%, ece=3.5812663604170076%
+pertub=10: accuracy=62.08799743652344%, ece=3.5273950714021924%
+pertub=12: accuracy=62.27199935913086%, ece=3.2338498738929626%
+pertub=14: accuracy=62.6359977722168%, ece=3.266401133403183%
+pertub=16: accuracy=62.49599838256836%, ece=3.1846381540670996%
+pertub=18: accuracy=62.689998626708984%, ece=3.233683193504809%
+pertub=20: accuracy=62.66999816894531%, ece=3.281721401348709%
+pertub=22: accuracy=62.85199737548828%, ece=3.354482886597516%
+pertub=24: accuracy=62.78199768066406%, ece=3.256638282567263%
+pertub=26: accuracy=62.9219970703125%, ece=3.109921212121846%
+pertub=28: accuracy=62.854000091552734%, ece=3.1747592808455236%
+pertub=30: accuracy=62.85199737548828%, ece=3.1359950446486464%
+
+Results extraction completed at Tue Jul 29 11:05:14 CST 2025

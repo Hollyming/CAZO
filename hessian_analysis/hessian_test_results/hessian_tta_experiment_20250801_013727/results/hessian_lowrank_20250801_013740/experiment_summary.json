@@ -1,0 +1,54 @@
+{
+  "experiment_info": {
+    "total_steps": 100,
+    "total_parameters": 5378,
+    "max_rank_analyzed": 50,
+    "timestamp": "2025-08-01T01:40:42.033547"
+  },
+  "lowrank_summary": {
+    "explained_variance_ratios": {
+      "top_5": {
+        "mean": "0.66514516",
+        "std": "0.0648234",
+        "min": "0.5116763",
+        "max": "0.79592836"
+      },
+      "top_10": {
+        "mean": "0.86536795",
+        "std": "0.046034418",
+        "min": "0.7529801",
+        "max": "0.95049316"
+      },
+      "top_20": {
+        "mean": "0.9890185",
+        "std": "0.008490461",
+        "min": "0.966232",
+        "max": "0.9992846"
+      },
+      "top_50": {
+        "mean": "0.99999833",
+        "std": "2.3458801e-07",
+        "min": "0.9999976",
+        "max": "0.99999875"
+      }
+    },
+    "effective_rank": {
+      "mean": "12.019357",
+      "std": "2.1715846"
+    },
+    "condition_number": {
+      "mean": "35923.332",
+      "std": "30323.02"
+    }
+  },
+  "consistency_summary": {
+    "subspace_angle": {
+      "mean": "1.5456316",
+      "std": "0.017928781"
+    },
+    "eigenvalue_correlation": {
+      "mean": 0.9627180140704821,
+      "std": 0.036722171705681574
+    }
+  }
+}

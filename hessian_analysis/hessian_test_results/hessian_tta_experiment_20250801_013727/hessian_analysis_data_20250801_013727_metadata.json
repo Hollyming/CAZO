@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-08-01T01:40:42.193571",
+  "data_description": "合并的特征值分析数据",
+  "total_steps": 100,
+  "eigenvalues_shape_info": [
+    5378,
+    5378,
+    5378,
+    5378,
+    5378
+  ],
+  "file_format": "npz (compressed numpy arrays)",
+  "load_instructions": "使用 HessianVisualizationTools.load_analysis_data() 加载数据"
+}

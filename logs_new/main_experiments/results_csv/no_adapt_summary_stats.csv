@@ -1,0 +1,17 @@
+method,dataset,top1_acc_mean,top1_acc_std,ece_mean,ece_std,count,note
+no_adapt,gaussian_noise,56.755997,0.0,7.502599999999999,0.0,5,per_corruption_across_seeds
+no_adapt,shot_noise,56.78599899999999,7.944109290391274e-15,4.5869,0.0,5,per_corruption_across_seeds
+no_adapt,impulse_noise,57.49399900000001,7.944109290391274e-15,6.566599999999999,9.930136612989092e-16,5,per_corruption_across_seeds
+no_adapt,defocus_blur,46.885998,0.0,6.494999999999999,0.0,5,per_corruption_across_seeds
+no_adapt,glass_blur,35.585999,0.0,6.154599999999999,0.0,5,per_corruption_across_seeds
+no_adapt,motion_blur,53.113998,0.0,2.6079000000000003,0.0,5,per_corruption_across_seeds
+no_adapt,zoom_blur,44.809998,0.0,4.9554,0.0,5,per_corruption_across_seeds
+no_adapt,snow,62.23,0.0,4.7103,0.0,5,per_corruption_across_seeds
+no_adapt,frost,62.545998,0.0,19.7394,0.0,5,per_corruption_across_seeds
+no_adapt,fog,65.729996,0.0,49.2249,0.0,5,per_corruption_across_seeds
+no_adapt,brightness,77.655998,0.0,8.6284,0.0,5,per_corruption_across_seeds
+no_adapt,contrast,32.625999,0.0,19.304,0.0,5,per_corruption_across_seeds
+no_adapt,elastic_transform,46.028,0.0,6.0144,0.0,5,per_corruption_across_seeds
+no_adapt,pixelate,66.953995,0.0,4.9519,0.0,5,per_corruption_across_seeds
+no_adapt,jpeg_compression,67.599998,0.0,6.1835,0.0,5,per_corruption_across_seeds
+no_adapt,ImageNet-C_Overall,55.520131466666655,0.0,10.508386666666668,0.0,5,overall_across_seeds

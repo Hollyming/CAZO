@@ -1,0 +1,11 @@
+Extracting results from completed experiments...
+Format: reduction_factor=X (bottleneck=Y): accuracy=Z.ZZ%, ece=W.WW%
+============================================
+reduction_factor=384 (bottleneck=2): accuracy=62.66999816894531%, ece=3.281721401348709%
+reduction_factor=256 (bottleneck=3): accuracy=62.615997314453125%, ece=3.2012439201325167%
+reduction_factor=192 (bottleneck=4): accuracy=62.7599983215332%, ece=3.1418746764063843%
+reduction_factor=128 (bottleneck=6): accuracy=62.736000061035156%, ece=3.287714561223983%
+reduction_factor=96 (bottleneck=8): accuracy=62.455997467041016%, ece=3.269388123042881%
+reduction_factor=48 (bottleneck=16): accuracy=62.26199722290039%, ece=3.214356909796596%
+
+Results extraction completed at Tue Jul 29 10:53:00 CST 2025

@@ -1,0 +1,50 @@
+Extracting results from completed adapter layer sensitivity experiments...
+Format: adapter_layer=X (transformer_block=Y): accuracy=Z.ZZ%, ece=W.WW%
+Adapter layers: 0-11 correspond to ViT-Base/16 Transformer Blocks: 1-12
+============================================
+adapter_layer=0 (transformer_block=1): accuracy=62.28399658203125%, ece=4.548757492981852%
+adapter_layer=1 (transformer_block=2): accuracy=62.525997161865234%, ece=4.126161475144328%
+adapter_layer=2 (transformer_block=3): accuracy=62.69199752807617%, ece=3.622022300109267%
+adapter_layer=3 (transformer_block=4): accuracy=62.66999816894531%, ece=3.281721401348709%
+adapter_layer=4 (transformer_block=5): accuracy=61.53999710083008%, ece=2.9953716194108146%
+adapter_layer=5 (transformer_block=6): accuracy=60.115997314453125%, ece=2.9836897301003344%
+adapter_layer=6 (transformer_block=7): accuracy=58.78199768066406%, ece=2.528819815129043%
+adapter_layer=7 (transformer_block=8): accuracy=58.42599868774414%, ece=4.146211555331945%
+adapter_layer=8 (transformer_block=9): accuracy=57.95399856567383%, ece=5.166624382264913%
+adapter_layer=9 (transformer_block=10): accuracy=57.72999954223633%, ece=5.318510065734388%
+adapter_layer=10 (transformer_block=11): accuracy=57.44199752807617%, ece=6.209549927778543%
+adapter_layer=11 (transformer_block=12): accuracy=57.40999984741211%, ece=8.179434215195476%
+
+Results extraction completed at Tue Jul 29 11:28:57 CST 2025
+
+Analysis Results:
+Best accuracy: layer 2 (transformer block 3) with 62.69%
+Worst accuracy: layer 11 (transformer block 12) with 57.41%
+Accuracy gap: 5.28%
+
+Best ECE: layer 6 (transformer block 7) with 2.53%
+Worst ECE: layer 11 (transformer block 12) with 8.18%
+ECE gap: 5.65%
+
+Best combined (60% acc + 40% ece): layer 3 (transformer block 4) with acc=62.67%, ece=3.28%
+
+Detailed Results:
+Layer -> T-Block -> Accuracy ->    ECE -> Combined Score
+-------------------------------------------------------
+    0 ->       1 ->   62.28% ->  4.55% ->         0.811
+    1 ->       2 ->   62.53% ->  4.13% ->         0.868
+    2 ->       3 ->   62.69% ->  3.62% ->         0.923
+    3 ->       4 ->   62.67% ->  3.28% ->         0.944
+    4 ->       5 ->   61.54% ->  3.00% ->         0.836
+    5 ->       6 ->   60.12% ->  2.98% ->         0.675
+    6 ->       7 ->   58.78% ->  2.53% ->         0.556
+    7 ->       8 ->   58.43% ->  4.15% ->         0.401
+    8 ->       9 ->   57.95% ->  5.17% ->         0.275
+    9 ->      10 ->   57.73% ->  5.32% ->         0.239
+   10 ->      11 ->   57.44% ->  6.21% ->         0.143
+   11 ->      12 ->   57.41% ->  8.18% ->         0.000
+
+Layer Position Analysis:
+Early layers (0-3) average accuracy: 62.54%
+Middle layers (4-7) average accuracy: 59.72%
+Late layers (8-11) average accuracy: 57.63%

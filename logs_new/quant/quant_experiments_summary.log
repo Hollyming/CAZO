@@ -1,0 +1,30 @@
+Quantized Model Experiments Started at Wed Jul 30 23:37:33 CST 2025
+Algorithms: NoAdapt, LAME, T3A, FOA, ZO_Base, CAZO
+Quantization: 8-bit (PTQ4ViT)
+Using GPUs: 0 2 3 4
+GPU Strategy: Sequential execution per GPU
+============================================
+Experiment no_adapt started at: Wed Jul 30 23:37:33 CST 2025 on GPU 0
+Experiment lame started at: Wed Jul 30 23:37:35 CST 2025 on GPU 2
+Experiment t3a started at: Wed Jul 30 23:37:37 CST 2025 on GPU 3
+Experiment foa started at: Wed Jul 30 23:37:39 CST 2025 on GPU 4
+
+All quantized experiments completed at Wed Jul 30 23:37:41 CST 2025
+
+GPU Assignment Summary:
+- GPU 0: no_adapt zo_base
+- GPU 2: lame cazo
+- GPU 3: t3a
+- GPU 4: foa
+
+Next steps:
+1. Extract results: bash /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/quant/extract_quant_results.sh
+2. Analyze results: python3 /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/quant/analyze_quant_results.py
+Experiment no_adapt completed successfully at: Thu Jul 31 00:10:02 CST 2025 on GPU 0
+Experiment lame completed successfully at: Thu Jul 31 00:10:15 CST 2025 on GPU 2
+Experiment zo_base started at: Thu Jul 31 00:10:18 CST 2025 on GPU 0
+Experiment cazo started at: Thu Jul 31 00:10:30 CST 2025 on GPU 2
+Experiment t3a completed successfully at: Thu Jul 31 00:34:06 CST 2025 on GPU 3
+Experiment foa completed successfully at: Thu Jul 31 12:41:21 CST 2025 on GPU 4
+Experiment cazo completed successfully at: Thu Jul 31 18:45:03 CST 2025 on GPU 2
+Experiment zo_base completed successfully at: Thu Jul 31 18:46:01 CST 2025 on GPU 0

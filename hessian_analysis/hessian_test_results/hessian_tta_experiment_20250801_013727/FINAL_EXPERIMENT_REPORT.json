@@ -1,0 +1,93 @@
+{
+  "experiment_info": {
+    "timestamp": "20250801_013727",
+    "device": "cuda:0",
+    "model_type": "ViT-Base + AdaFormer",
+    "dataset": "ImageNet-C (gaussian_noise, level=5)",
+    "total_batches_analyzed": 100,
+    "total_parameters": 5378,
+    "adapter_layers": "3",
+    "batch_size": 32
+  },
+  "key_findings": {
+    "low_rank_evidence": {
+      "top_10_explained_variance_mean": 0.8653679490089417,
+      "top_10_explained_variance_std": 0.04603441804647446,
+      "low_rank_confirmed": "True",
+      "interpretation": "前10个主成分平均解释了86.5%的方差，证实了低秩特性"
+    },
+    "consistency_evidence": {
+      "mean_subspace_angle_deg": 88.55816650390625,
+      "std_subspace_angle_deg": 1.0272433757781982,
+      "consistency_confirmed": "False",
+      "interpretation": "主子空间角度平均为88.6度，一致性有待改善"
+    },
+    "effective_rank_analysis": {
+      "mean_effective_rank": 12.019356727600098,
+      "effective_rank_stability": 2.1715846061706543,
+      "rank_ratio": 0.002234911998438099,
+      "interpretation": "有效秩平均为12.0，占总参数的0.22%"
+    }
+  },
+  "detailed_results": {
+    "experiment_info": {
+      "total_steps": 100,
+      "total_parameters": 5378,
+      "max_rank_analyzed": 50,
+      "timestamp": "2025-08-01T01:40:42.033547"
+    },
+    "lowrank_summary": {
+      "explained_variance_ratios": {
+        "top_5": {
+          "mean": "0.66514516",
+          "std": "0.0648234",
+          "min": "0.5116763",
+          "max": "0.79592836"
+        },
+        "top_10": {
+          "mean": "0.86536795",
+          "std": "0.046034418",
+          "min": "0.7529801",
+          "max": "0.95049316"
+        },
+        "top_20": {
+          "mean": "0.9890185",
+          "std": "0.008490461",
+          "min": "0.966232",
+          "max": "0.9992846"
+        },
+        "top_50": {
+          "mean": "0.99999833",
+          "std": "2.3458801e-07",
+          "min": "0.9999976",
+          "max": "0.99999875"
+        }
+      },
+      "effective_rank": {
+        "mean": "12.019357",
+        "std": "2.1715846"
+      },
+      "condition_number": {
+        "mean": "35923.332",
+        "std": "30323.02"
+      }
+    },
+    "consistency_summary": {
+      "subspace_angle": {
+        "mean": "1.5456316",
+        "std": "0.017928781"
+      },
+      "eigenvalue_correlation": {
+        "mean": 0.9627180140704821,
+        "std": 0.036722171705681574
+      }
+    }
+  },
+  "file_locations": {
+    "figures": "figures",
+    "hessian_matrices": "results/hessian_lowrank_20250801_013740/hessian_matrices",
+    "analysis_results": "results/hessian_lowrank_20250801_013740/analysis_results",
+    "tensorboard_logs": "results/hessian_lowrank_20250801_013740/tensorboard",
+    "analysis_data": "hessian_analysis_data_20250801_013727.npz"
+  }
+}

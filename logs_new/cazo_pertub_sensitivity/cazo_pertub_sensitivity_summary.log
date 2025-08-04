@@ -1,0 +1,54 @@
+CAZO Perturbation Sensitivity Analysis Started at Mon Jul 28 23:52:05 CST 2025
+Testing pertub values: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+============================================
+Experiment pertub=2 started at: Mon Jul 28 23:52:05 CST 2025
+Experiment pertub=2 completed successfully at: Mon Jul 28 23:59:31 CST 2025
+Warning: Log file not found for pertub=2
+Experiment pertub=4 started at: Mon Jul 28 23:59:41 CST 2025
+Experiment pertub=4 completed successfully at: Tue Jul 29 00:11:45 CST 2025
+Warning: Log file not found for pertub=4
+Experiment pertub=6 started at: Tue Jul 29 00:11:55 CST 2025
+Experiment pertub=6 completed successfully at: Tue Jul 29 00:29:07 CST 2025
+Warning: Log file not found for pertub=6
+Experiment pertub=8 started at: Tue Jul 29 00:29:17 CST 2025
+Experiment pertub=8 completed successfully at: Tue Jul 29 00:51:38 CST 2025
+Warning: Log file not found for pertub=8
+Experiment pertub=10 started at: Tue Jul 29 00:51:48 CST 2025
+Experiment pertub=10 completed successfully at: Tue Jul 29 01:19:17 CST 2025
+Warning: Log file not found for pertub=10
+Experiment pertub=12 started at: Tue Jul 29 01:19:27 CST 2025
+Experiment pertub=12 completed successfully at: Tue Jul 29 01:52:04 CST 2025
+Warning: Log file not found for pertub=12
+Experiment pertub=14 started at: Tue Jul 29 01:52:14 CST 2025
+Experiment pertub=14 completed successfully at: Tue Jul 29 02:29:58 CST 2025
+Warning: Log file not found for pertub=14
+Experiment pertub=16 started at: Tue Jul 29 02:30:08 CST 2025
+Experiment pertub=16 completed successfully at: Tue Jul 29 03:13:01 CST 2025
+Warning: Log file not found for pertub=16
+Experiment pertub=18 started at: Tue Jul 29 03:13:11 CST 2025
+Experiment pertub=18 completed successfully at: Tue Jul 29 04:01:10 CST 2025
+Warning: Log file not found for pertub=18
+Experiment pertub=20 started at: Tue Jul 29 04:01:20 CST 2025
+Experiment pertub=20 completed successfully at: Tue Jul 29 04:54:28 CST 2025
+Warning: Log file not found for pertub=20
+Experiment pertub=22 started at: Tue Jul 29 04:54:38 CST 2025
+Experiment pertub=22 completed successfully at: Tue Jul 29 05:52:56 CST 2025
+Warning: Log file not found for pertub=22
+Experiment pertub=24 started at: Tue Jul 29 05:53:06 CST 2025
+Experiment pertub=24 completed successfully at: Tue Jul 29 06:56:29 CST 2025
+Warning: Log file not found for pertub=24
+Experiment pertub=26 started at: Tue Jul 29 06:56:39 CST 2025
+Experiment pertub=26 completed successfully at: Tue Jul 29 08:05:11 CST 2025
+Warning: Log file not found for pertub=26
+Experiment pertub=28 started at: Tue Jul 29 08:05:21 CST 2025
+Experiment pertub=28 completed successfully at: Tue Jul 29 09:19:04 CST 2025
+Warning: Log file not found for pertub=28
+Experiment pertub=30 started at: Tue Jul 29 09:19:14 CST 2025
+Experiment pertub=30 completed successfully at: Tue Jul 29 10:38:06 CST 2025
+Warning: Log file not found for pertub=30
+
+============================================
+FINAL SUMMARY OF ALL EXPERIMENTS
+============================================
+
+All experiments completed at Tue Jul 29 10:38:16 CST 2025

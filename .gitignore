@@ -1,0 +1,27 @@
+# Created by https://www.gitignore.io/api/code,python
+# Edit at https://www.gitignore.io/?templates=code,python
+
+### Code ###
+.vscode/*
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+# *.py[cod]
+# *$py.class
+# C extensions
+# *.so
+*.pdf
+*.xlsx
+# *.sh
+*.ps1
+*.npy
+*.npz
+
+# Mac system files
+*.DS_Store
+subspace_training/
