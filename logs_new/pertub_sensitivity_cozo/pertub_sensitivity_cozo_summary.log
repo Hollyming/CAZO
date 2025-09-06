@@ -1,0 +1,41 @@
+COZO Perturbation Sensitivity Analysis Started at Wed Aug 27 10:39:58 CST 2025
+Testing pertub values: 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
+Note: Higher perturbation may provide better gradient estimation but requires more computation
+GPU Count: 7
+GPU IDs: 0 1 2 3 4 5 6
+Total experiments: 15
+============================================
+Experiment 0 (pertub=2) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 0
+Experiment 1 (pertub=4) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 1
+Experiment 5 (pertub=12) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 5
+Experiment 2 (pertub=6) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 2
+Experiment 3 (pertub=8) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 3
+Experiment 6 (pertub=14) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 6
+Experiment 4 (pertub=10) started at: Wed Aug 27 10:39:58 CST 2025 on GPU 4
+ERROR: Experiment 0 (pertub=2) failed at: Wed Aug 27 10:40:53 CST 2025
+Experiment 7 (pertub=16) started at: Wed Aug 27 10:40:53 CST 2025 on GPU 0
+Experiment 1 (pertub=4) completed successfully at: Wed Aug 27 14:07:43 CST 2025
+Experiment 8 (pertub=18) started at: Wed Aug 27 14:07:43 CST 2025 on GPU 1
+Experiment 2 (pertub=6) completed successfully at: Wed Aug 27 15:26:07 CST 2025
+Experiment 9 (pertub=20) started at: Wed Aug 27 15:26:07 CST 2025 on GPU 2
+Experiment 3 (pertub=8) completed successfully at: Wed Aug 27 16:45:59 CST 2025
+Experiment 10 (pertub=22) started at: Wed Aug 27 16:45:59 CST 2025 on GPU 3
+Experiment 4 (pertub=10) completed successfully at: Wed Aug 27 18:11:18 CST 2025
+Experiment 11 (pertub=24) started at: Wed Aug 27 18:11:18 CST 2025 on GPU 4
+Experiment 5 (pertub=12) completed successfully at: Wed Aug 27 19:26:36 CST 2025
+Experiment 12 (pertub=26) started at: Wed Aug 27 19:26:36 CST 2025 on GPU 5
+Experiment 6 (pertub=14) completed successfully at: Wed Aug 27 20:46:49 CST 2025
+Experiment 13 (pertub=28) started at: Wed Aug 27 20:46:49 CST 2025 on GPU 6
+Experiment 7 (pertub=16) completed successfully at: Wed Aug 27 22:13:07 CST 2025
+Experiment 14 (pertub=30) started at: Wed Aug 27 22:13:07 CST 2025 on GPU 0
+Experiment 8 (pertub=18) completed successfully at: Thu Aug 28 02:55:16 CST 2025
+Experiment 9 (pertub=20) completed successfully at: Thu Aug 28 05:30:59 CST 2025
+Experiment 10 (pertub=22) completed successfully at: Thu Aug 28 08:10:30 CST 2025
+Experiment 11 (pertub=24) completed successfully at: Thu Aug 28 11:07:41 CST 2025
+Experiment 12 (pertub=26) completed successfully at: Thu Aug 28 13:32:18 CST 2025
+Experiment 13 (pertub=28) completed successfully at: Thu Aug 28 16:08:30 CST 2025
+Experiment 14 (pertub=30) completed successfully at: Thu Aug 28 19:05:41 CST 2025
+
+All experiments completed at Thu Aug 28 19:05:41 CST 2025
+Results saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/outputs_new/pertub_sensitivity_cozo
+Logs saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/pertub_sensitivity_cozo

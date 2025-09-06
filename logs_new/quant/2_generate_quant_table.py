@@ -308,10 +308,10 @@ def main():
     print("正在读取量化实验结果...")
     
     # 确保输出目录存在
-    os.makedirs("results_csv/quant", exist_ok=True)
+    os.makedirs("results_csv/quant_bs32", exist_ok=True)
     
     # 加载所有结果
-    all_results = load_quant_results("results_csv/quant")
+    all_results = load_quant_results("results_csv/quant_bs32")
     
     if not all_results:
         print("未找到任何结果文件！请先运行 1_analyze_quant_results.py")
@@ -329,12 +329,12 @@ def main():
     print_console_table(table_data)
     
     # 保存为不同格式
-    save_table_to_csv(table_data, "quant_results_table.csv")
-    generate_latex_table(table_data, "quant_results_table.tex")
+    save_table_to_csv(table_data, "quant_results_table_bs32.csv")
+    generate_latex_table(table_data, "quant_results_table_bs32.tex")
     
     print(f"\n量化结果表格已生成:")
-    print(f"  - CSV格式: quant_results_table.csv")
-    print(f"  - LaTeX格式: quant_results_table.tex")
+    print(f"  - CSV格式: quant_results_table_bs32.csv")
+    print(f"  - LaTeX格式: quant_results_table_bs32.tex")
     
     # 显示统计信息
     print(f"\n统计信息:")

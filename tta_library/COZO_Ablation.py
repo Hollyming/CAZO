@@ -82,7 +82,7 @@ class Adam(Optimizer):
 class COZO_Ablation(nn.Module):
     """COZO算法的消融实验版本，用于分析均值m和协方差C的贡献"""
     def __init__(self, model: AdaFormerViT, mode='full', fitness_lambda=0.4, lr=0.01, 
-                 pertub=14, perturbation_scale=10.0, optimizer_type='sgd', beta=0.9):
+                 pertub=14, epsilon=0.1, optimizer_type='sgd', beta=0.9):
         """
         Args:
             model: AdaFormerViT模型
@@ -92,7 +92,7 @@ class COZO_Ablation(nn.Module):
             fitness_lambda: 适应度函数的平衡因子
             lr: 学习率
             pertub: 扰动数量
-            perturbation_scale: 扰动缩放因子
+            epsilon: 扰动缩放因子
             optimizer_type: 优化器类型，可选'sgd'或'sgd_momentum'
             beta: 动量系数，仅当optimizer_type='sgd_momentum'时有效
         """
@@ -103,7 +103,7 @@ class COZO_Ablation(nn.Module):
         self.zo_eps = 1.0
         self.pertub = pertub - 1
         # 扰动缩减因子,用于控制扰动大小
-        self.perturbation_scale = perturbation_scale
+        self.epsilon = epsilon
         
         self.model = model
         # 确保所有adapter参数不需要梯度
@@ -172,7 +172,7 @@ class COZO_Ablation(nn.Module):
                     param_perturbation = torch.tensor(
                         param_perturbation, dtype=torch.float, device=param.device
                     )
-                param.data += sign * self.zo_eps * param_perturbation.reshape(param.shape)
+                param.data += sign * self.epsilon * param_perturbation.reshape(param.shape)
                 start_idx += num_params
 
     def _save_current_adapter(self):
@@ -233,7 +233,7 @@ class COZO_Ablation(nn.Module):
         for j, z in enumerate(perturbations):
             # 正向扰动
             self._load_adapter(current_adapter)  # 重置到初始状态
-            self._apply_perturbation(z/self.perturbation_scale, sign=1)  #应用扰动到adapter参数
+            self._apply_perturbation(z, sign=1)  #应用扰动到adapter参数
             
             outputs_pos, loss_pos, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
@@ -253,7 +253,7 @@ class COZO_Ablation(nn.Module):
             # 负向扰动
             #正向扰动的loss来评估这个方向的质量，负向扰动只用于计算梯度估计，不参与CMA-ES的更新
             self._load_adapter(current_adapter)  # 重置到初始状态
-            self._apply_perturbation(z/self.perturbation_scale, sign=-1) #应用扰动到adapter参数
+            self._apply_perturbation(z, sign=-1) #应用扰动到adapter参数
             
             outputs_neg, loss_neg, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info,
@@ -263,7 +263,8 @@ class COZO_Ablation(nn.Module):
             del batch_mean
             
             # 计算该扰动的梯度估计 - 直接使用GPU tensor
-            grad_estimate += z/self.perturbation_scale * (loss_pos - loss_neg) / (2.0 * self.zo_eps)
+            # grad_estimate += z*self.epsilon * (loss_pos - loss_neg) / (2.0 * self.zo_eps)  # special版本，已废弃
+            grad_estimate += z * (loss_pos - loss_neg) / (2.0 * self.epsilon)  # standard版本
             print(f'Solution:[{j+1}/{len(perturbations)}], Loss: {loss_pos.item()}')
         
         # 平均梯度估计

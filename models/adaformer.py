@@ -12,7 +12,7 @@ class AdaFormerViT(nn.Module):
     def __init__(self, 
                 vit: VisionTransformer,
                 adapter_layer: Union[str, int, List[int], None] = None,
-                reduction_factor: int = 16,  # adapter bottleneck的降维比例
+                reduction_factor: int = 16,  
                 dropout: float = 0.1,
                 init_option: str = "lora",
                 adapter_scalar: str = "0.1",

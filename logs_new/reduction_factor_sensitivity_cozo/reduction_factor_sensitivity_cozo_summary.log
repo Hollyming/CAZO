@@ -1,0 +1,24 @@
+COZO Reduction Factor Sensitivity Analysis Started at Tue Aug 26 19:59:52 CST 2025
+Testing reduction_factor values: 384 256 192 128 96 48
+Note: Larger reduction factor = smaller adapter bottleneck dimension
+Adapter bottleneck dim = hidden_size / reduction_factor = 768 / reduction_factor
+GPU Count: 3
+GPU IDs: 5 6 7
+Total experiments: 6
+============================================
+Experiment 0 (reduction_factor=384, bottleneck_dim=2) started at: Tue Aug 26 19:59:52 CST 2025 on GPU 5
+Experiment 1 (reduction_factor=256, bottleneck_dim=3) started at: Tue Aug 26 19:59:52 CST 2025 on GPU 6
+Experiment 2 (reduction_factor=192, bottleneck_dim=4) started at: Tue Aug 26 19:59:52 CST 2025 on GPU 7
+Experiment 0 (reduction_factor=384) completed successfully at: Wed Aug 27 10:11:54 CST 2025
+Experiment 3 (reduction_factor=128, bottleneck_dim=6) started at: Wed Aug 27 10:11:54 CST 2025 on GPU 5
+Experiment 1 (reduction_factor=256) completed successfully at: Wed Aug 27 10:29:38 CST 2025
+Experiment 4 (reduction_factor=96, bottleneck_dim=8) started at: Wed Aug 27 10:29:38 CST 2025 on GPU 6
+Experiment 2 (reduction_factor=192) completed successfully at: Wed Aug 27 10:55:21 CST 2025
+Experiment 5 (reduction_factor=48, bottleneck_dim=16) started at: Wed Aug 27 10:55:21 CST 2025 on GPU 7
+Experiment 3 (reduction_factor=128) completed successfully at: Thu Aug 28 02:53:48 CST 2025
+Experiment 4 (reduction_factor=96) completed successfully at: Thu Aug 28 04:54:46 CST 2025
+Experiment 5 (reduction_factor=48) completed successfully at: Thu Aug 28 14:10:49 CST 2025
+
+All experiments completed at Thu Aug 28 14:10:49 CST 2025
+Results saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/outputs_new/reduction_factor_sensitivity_cozo
+Logs saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/reduction_factor_sensitivity_cozo

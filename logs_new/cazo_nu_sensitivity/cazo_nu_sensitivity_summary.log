@@ -1,0 +1,47 @@
+CAZO Nu Parameter Sensitivity Analysis Started at Sat Aug  9 22:54:04 CST 2025
+Testing nu values: 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.95 0.98 0.99
+Using 7 GPUs: 0 1 2 3 4 5 6
+============================================
+Experiment 1 (nu=0.1, GPU=0) started at: Sat Aug  9 22:54:04 CST 2025
+Experiment 2 (nu=0.2, GPU=1) started at: Sat Aug  9 22:54:09 CST 2025
+Experiment 3 (nu=0.3, GPU=2) started at: Sat Aug  9 22:54:14 CST 2025
+Experiment 4 (nu=0.4, GPU=3) started at: Sat Aug  9 22:54:19 CST 2025
+Experiment 5 (nu=0.5, GPU=4) started at: Sat Aug  9 22:54:24 CST 2025
+Experiment 6 (nu=0.6, GPU=5) started at: Sat Aug  9 22:54:29 CST 2025
+Experiment 7 (nu=0.7, GPU=6) started at: Sat Aug  9 22:54:34 CST 2025
+Experiment 7 (nu=0.7, GPU=6) completed successfully at: Sun Aug 10 12:05:56 CST 2025
+Warning: Log file not found for Exp 7 (nu=0.7)
+Experiment 4 (nu=0.4, GPU=3) completed successfully at: Sun Aug 10 12:05:57 CST 2025
+Warning: Log file not found for Exp 4 (nu=0.4)
+Experiment 3 (nu=0.3, GPU=2) completed successfully at: Sun Aug 10 12:06:01 CST 2025
+Warning: Log file not found for Exp 3 (nu=0.3)
+Experiment 5 (nu=0.5, GPU=4) completed successfully at: Sun Aug 10 12:06:06 CST 2025
+Warning: Log file not found for Exp 5 (nu=0.5)
+Experiment 1 (nu=0.1, GPU=0) completed successfully at: Sun Aug 10 12:08:11 CST 2025
+Warning: Log file not found for Exp 1 (nu=0.1)
+Experiment 2 (nu=0.2, GPU=1) completed successfully at: Sun Aug 10 12:13:58 CST 2025
+Warning: Log file not found for Exp 2 (nu=0.2)
+Experiment 8 (nu=0.8, GPU=0) started at: Sun Aug 10 12:13:58 CST 2025
+Experiment 9 (nu=0.9, GPU=1) started at: Sun Aug 10 12:14:03 CST 2025
+Experiment 10 (nu=0.95, GPU=2) started at: Sun Aug 10 12:14:08 CST 2025
+Experiment 11 (nu=0.98, GPU=3) started at: Sun Aug 10 12:14:13 CST 2025
+Experiment 12 (nu=0.99, GPU=4) started at: Sun Aug 10 12:14:18 CST 2025
+Experiment 6 (nu=0.6, GPU=5) completed successfully at: Sun Aug 10 12:14:38 CST 2025
+Warning: Log file not found for Exp 6 (nu=0.6)
+Experiment 11 (nu=0.98, GPU=3) completed successfully at: Mon Aug 11 01:25:38 CST 2025
+Warning: Log file not found for Exp 11 (nu=0.98)
+Experiment 12 (nu=0.99, GPU=4) completed successfully at: Mon Aug 11 01:25:54 CST 2025
+Warning: Log file not found for Exp 12 (nu=0.99)
+Experiment 10 (nu=0.95, GPU=2) completed successfully at: Mon Aug 11 01:25:55 CST 2025
+Warning: Log file not found for Exp 10 (nu=0.95)
+Experiment 8 (nu=0.8, GPU=0) completed successfully at: Mon Aug 11 01:29:10 CST 2025
+Warning: Log file not found for Exp 8 (nu=0.8)
+Experiment 9 (nu=0.9, GPU=1) completed successfully at: Mon Aug 11 01:36:45 CST 2025
+Warning: Log file not found for Exp 9 (nu=0.9)
+
+============================================
+FINAL SUMMARY OF ALL NU SENSITIVITY EXPERIMENTS
+============================================
+Extracting all results...
+
+All nu sensitivity experiments completed at Mon Aug 11 01:36:45 CST 2025

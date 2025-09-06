@@ -1,0 +1,11 @@
+python ./run_experiment3.py \
+  --data_corruption /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-c/imagenet-c \
+  --output ./results \
+  --batch_size 64 \
+  --max_batches 100 \
+  --gpu 0 \
+  --adapter_layers 3 \
+  --reduction_factor 384 \
+  --heatmap_scale logabs \
+  --heatmap_clip_percentile 100 \
+  --heatmap_max_dim 5378

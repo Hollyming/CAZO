@@ -1,21 +1,21 @@
-Main Experiments Started at Thu Jul 31 15:53:37 CST 2025
-Algorithms: zo_base
+Main Experiments Started at Tue Aug 26 19:57:42 CST 2025
+Algorithms: cozo
 Seeds: 42 2020 2025 1234 888
-GPU Count: 5
-GPU IDs: 3 4 5 6 7
+GPU Count: 7
+GPU IDs: 0 1 2 3 4 5 6
 Total experiments: 5
 ============================================
-Experiment 2 (zo_base, seed 2025) started at: Thu Jul 31 15:53:37 CST 2025 on GPU 5
-Experiment 4 (zo_base, seed 888) started at: Thu Jul 31 15:53:37 CST 2025 on GPU 7
-Experiment 1 (zo_base, seed 2020) started at: Thu Jul 31 15:53:37 CST 2025 on GPU 4
-Experiment 0 (zo_base, seed 42) started at: Thu Jul 31 15:53:37 CST 2025 on GPU 3
-Experiment 3 (zo_base, seed 1234) started at: Thu Jul 31 15:53:37 CST 2025 on GPU 6
-Experiment 3 (zo_base, seed 1234) completed successfully at: Fri Aug  1 05:05:11 CST 2025
-Experiment 0 (zo_base, seed 42) completed successfully at: Fri Aug  1 05:05:11 CST 2025
-Experiment 4 (zo_base, seed 888) completed successfully at: Fri Aug  1 05:05:57 CST 2025
-Experiment 1 (zo_base, seed 2020) completed successfully at: Fri Aug  1 05:07:15 CST 2025
-Experiment 2 (zo_base, seed 2025) completed successfully at: Fri Aug  1 05:13:55 CST 2025
+Experiment 0 (cozo, seed 42) started at: Tue Aug 26 19:57:42 CST 2025 on GPU 0
+Experiment 1 (cozo, seed 2020) started at: Tue Aug 26 19:57:42 CST 2025 on GPU 1
+Experiment 3 (cozo, seed 1234) started at: Tue Aug 26 19:57:42 CST 2025 on GPU 3
+Experiment 4 (cozo, seed 888) started at: Tue Aug 26 19:57:42 CST 2025 on GPU 4
+Experiment 2 (cozo, seed 2025) started at: Tue Aug 26 19:57:42 CST 2025 on GPU 2
+Experiment 2 (cozo, seed 2025) completed successfully at: Wed Aug 27 10:05:58 CST 2025
+Experiment 4 (cozo, seed 888) completed successfully at: Wed Aug 27 10:05:59 CST 2025
+Experiment 3 (cozo, seed 1234) completed successfully at: Wed Aug 27 10:06:02 CST 2025
+Experiment 0 (cozo, seed 42) completed successfully at: Wed Aug 27 10:06:36 CST 2025
+Experiment 1 (cozo, seed 2020) completed successfully at: Wed Aug 27 10:12:56 CST 2025
 
-All experiments completed at Fri Aug  1 05:13:55 CST 2025
+All experiments completed at Wed Aug 27 10:12:56 CST 2025
 Results saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/outputs_new/main_experiments
 Logs saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/main_experiments

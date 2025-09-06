@@ -1,0 +1,36 @@
+COZO Adapter Layer Sensitivity Analysis Started at Wed Aug 27 10:29:21 CST 2025
+Testing adapter_layer values: 0 1 2 3 4 5 6 7 8 9 10 11
+Corresponding to ViT-Base/16 Transformer Blocks: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+Note: Different layers may capture different levels of features
+GPU Count: 5
+GPU IDs: 0 1 2 3 4
+Total experiments: 12
+============================================
+Experiment 0 (adapter_layer=0, Transformer Block 1) started at: Wed Aug 27 10:29:21 CST 2025 on GPU 0
+Experiment 1 (adapter_layer=1, Transformer Block 2) started at: Wed Aug 27 10:29:21 CST 2025 on GPU 1
+Experiment 3 (adapter_layer=3, Transformer Block 4) started at: Wed Aug 27 10:29:21 CST 2025 on GPU 3
+Experiment 2 (adapter_layer=2, Transformer Block 3) started at: Wed Aug 27 10:29:21 CST 2025 on GPU 2
+Experiment 4 (adapter_layer=4, Transformer Block 5) started at: Wed Aug 27 10:29:21 CST 2025 on GPU 4
+Experiment 3 (adapter_layer=3) completed successfully at: Thu Aug 28 00:49:10 CST 2025
+Experiment 8 (adapter_layer=8, Transformer Block 9) started at: Thu Aug 28 00:49:10 CST 2025 on GPU 3
+Experiment 4 (adapter_layer=4) completed successfully at: Thu Aug 28 00:49:14 CST 2025
+Experiment 9 (adapter_layer=9, Transformer Block 10) started at: Thu Aug 28 00:49:14 CST 2025 on GPU 4
+Experiment 2 (adapter_layer=2) completed successfully at: Thu Aug 28 00:49:54 CST 2025
+Experiment 7 (adapter_layer=7, Transformer Block 8) started at: Thu Aug 28 00:49:54 CST 2025 on GPU 2
+Experiment 0 (adapter_layer=0) completed successfully at: Thu Aug 28 00:51:46 CST 2025
+Experiment 5 (adapter_layer=5, Transformer Block 6) started at: Thu Aug 28 00:51:46 CST 2025 on GPU 0
+Experiment 1 (adapter_layer=1) completed successfully at: Thu Aug 28 00:57:30 CST 2025
+Experiment 6 (adapter_layer=6, Transformer Block 7) started at: Thu Aug 28 00:57:30 CST 2025 on GPU 1
+Experiment 9 (adapter_layer=9) completed successfully at: Thu Aug 28 15:01:48 CST 2025
+Experiment 8 (adapter_layer=8) completed successfully at: Thu Aug 28 15:01:58 CST 2025
+Experiment 7 (adapter_layer=7) completed successfully at: Thu Aug 28 15:02:57 CST 2025
+Experiment 5 (adapter_layer=5) completed successfully at: Thu Aug 28 15:07:21 CST 2025
+Experiment 10 (adapter_layer=10, Transformer Block 11) started at: Thu Aug 28 15:07:21 CST 2025 on GPU 0
+Experiment 6 (adapter_layer=6) completed successfully at: Thu Aug 28 15:18:17 CST 2025
+Experiment 11 (adapter_layer=11, Transformer Block 12) started at: Thu Aug 28 15:18:17 CST 2025 on GPU 1
+Experiment 10 (adapter_layer=10) completed successfully at: Fri Aug 29 05:15:22 CST 2025
+Experiment 11 (adapter_layer=11) completed successfully at: Fri Aug 29 05:31:15 CST 2025
+
+All experiments completed at Fri Aug 29 05:31:15 CST 2025
+Results saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/outputs_new/adapter_layer_sensitivity_cozo
+Logs saved to: /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO/logs_new/adapter_layer_sensitivity_cozo

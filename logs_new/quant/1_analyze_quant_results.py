@@ -65,7 +65,8 @@ def analyze_quant_experiments():
     base_output_dir = "outputs_new/quant"
     
     # 量化类型 (只处理bs64)
-    quant_types = ["quant8_bs64", "quant6_bs64"]
+    # quant_types = ["quant8_bs64", "quant6_bs64"]
+    quant_types = ["quant8_bs32"]
     
     # 存储所有结果
     all_results = []
@@ -113,7 +114,7 @@ def analyze_quant_experiments():
     df = pd.DataFrame(all_results)
     
     # 创建输出目录
-    results_dir = Path("results_csv/quant")
+    results_dir = Path("results_csv/quant_bs32")
     results_dir.mkdir(parents=True, exist_ok=True)
     
     # 保存原始结果

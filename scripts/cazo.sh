@@ -5,7 +5,7 @@ cd ${PROJECT_ROOT}
 #--tag "_bs${batch_size}_lr${lr}_pertub${pertub}_adapter_layer${adapter_layer}_reduction_factor${reduction_factor}_${adapter_style}_epsilon${epsilon}_nu${nu}" 
 #seeds=(42 2020 2025 1234 888) 
 export CUDA_VISIBLE_DEVICES=3
-seed=2020
+seed=42
 batch_size=64
 lr=0.01
 pertub=20
@@ -45,4 +45,4 @@ python ${PROJECT_ROOT}/main.py \
     --epsilon ${epsilon} \
     --nu ${nu} \
     --fitness_lambda ${fitness_lambda} \
-    --tag "_seed${seed}_bs${batch_size}"
+    --tag "_seed${seed}_bs${batch_size}_nu${nu}"

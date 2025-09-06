@@ -6,6 +6,8 @@
 
 PROJECT_ROOT=/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO
 
+cd ${PROJECT_ROOT}
+
 # Create main experiment directories
 BASE_OUTPUT_DIR="${PROJECT_ROOT}/outputs_new/main_experiments"
 BASE_LOG_DIR="${PROJECT_ROOT}/logs_new/main_experiments"
@@ -22,12 +24,12 @@ workers=16
 seeds=(42 2020 2025 1234 888)
 
 # Algorithms to test
-# algorithms=(no_adapt lame t3a tent cotta sar foa zo_base cazo)
-algorithms=(zo_base)
+# algorithms=(no_adapt lame t3a tent cotta sar foa zo_base cazo cazo_lit cozo)
+algorithms=(cozo)
 
 # GPU configuration - MODIFY THIS TO SET YOUR GPU COUNT
-GPU_COUNT=5  # Change this to your desired GPU count
-GPU_IDS=(3 4 5 6 7)  # Modify this array to match your available GPUs
+GPU_COUNT=7  # Change this to your desired GPU count
+GPU_IDS=(0 1 2 3 4 5 6)  # Modify this array to match your available GPUs
 
 # ================================================================
 
@@ -73,6 +75,12 @@ get_algorithm_params() {
             ;;
         "cazo")
             params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
+            ;;
+        "cazo_lit")
+            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
+            ;;
+        "cozo")
+            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --fitness_lambda 0.4 --mode cov_only"
             ;;
     esac
     
