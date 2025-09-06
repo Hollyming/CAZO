@@ -40,6 +40,7 @@ from models.vit_adapter import AdapterViT
 from models.adaformer import AdaFormerViT
 
 
+
 def validate_adapt(val_loader, model, args, writer):
     batch_time = AverageMeter('Time', ':6.3f')
     top1 = AverageMeter('Acc@1', ':6.2f')
@@ -194,7 +195,7 @@ def get_args():
                        help='adapter layer for CMA-ZO-Adapter algorithm. Single number (e.g., 11) or comma-separated numbers (e.g., 3,7,11)')
     parser.add_argument('--reduction_factor', default=48, type=int, help='reduction factor for CMA-ZO-Adapter algorithm')
     parser.add_argument('--adapter_style', default="parallel", type=str, help='choose the style of adaformer: parallel or sequential')
-    parser.add_argument('--perturbation_scale', default=10.0, type=float, help='perturbation scale for CMA-ZO-Adapter algorithm')
+    # parser.add_argument('--perturbation_scale', default=10.0, type=float, help='perturbation scale for CMA-ZO-Adapter algorithm')
 
     # cozo_ablation settings
     parser.add_argument('--mode', default='full', type=str, choices=['full', 'mean_only', 'cov_only'],
@@ -247,8 +248,8 @@ if __name__ == '__main__':
     # options for ImageNet-R/V2/Sketch are ['rendition', 'v2', 'sketch']
     # For ImageNet-R, the fitness_lambda of FOA should be set to 0.2
     # We advise parallelizing the experiments for FOA (K=28) on multiple GPUs, where each GPU only run a corruption
-    # corruptions = ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-    corruptions = ['rendition', 'v2', 'sketch']
+    corruptions = ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
+    # corruptions = ['rendition', 'v2', 'sketch']
     # corruptions = ['gaussian_noise']
 
     # create model
@@ -285,7 +286,7 @@ if __name__ == '__main__':
             fitness_lambda=args.fitness_lambda,
             lr=args.lr,
             pertub=args.pertub,
-            perturbation_scale=args.perturbation_scale,
+            epsilon=args.epsilon,
             optimizer_type=args.optimizer,
             beta=args.beta
         )
@@ -308,7 +309,21 @@ if __name__ == '__main__':
         )
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
-    
+    elif args.algorithm == 'cazo_lit':
+        from tta_library.CAZO_lit import CAZO_Lit
+        net = AdaFormerViT(net, adapter_layer=args.adapter_layer, 
+                          reduction_factor=args.reduction_factor, adapter_style=args.adapter_style).cuda()
+        adapt_model = CAZO_Lit(
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            pertub=args.pertub,
+            epsilon=args.epsilon,
+            optimizer_type=args.optimizer,
+            beta=args.beta
+        )
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'zo_base':
         from tta_library.zo_base import ZO_Base  # 导入ZO_Base算法
         # 使用ZO_Base算法
