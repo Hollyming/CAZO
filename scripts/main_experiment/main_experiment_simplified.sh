@@ -4,13 +4,28 @@
 # Running 9 algorithms with 5 different seeds each
 # Configurable GPU count with parallel execution across GPUs
 
-PROJECT_ROOT=/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO
+PROJECT_ROOT=/home/zjm/Workspace/CAZO
 
 cd ${PROJECT_ROOT}
 
+DATASET_CHOICE="main_experiments"  # Options: "main_experiments" or "other_datasets"
+
+if [ "${DATASET_CHOICE}" == "main_experiments" ]; then
+    echo "Using dataset configuration for other datasets."
+    DATASET_STYLE="imagenet_c"
+elif [ "${DATASET_CHOICE}" == "other_datasets" ]; then
+    echo "Using dataset configuration for other datasets."
+    DATASET_STYLE="imagenet_r_s_v2"
+else
+    echo "Invalid DATASET_CHOICE: ${DATASET_CHOICE}. Exiting."
+    exit 1
+fi
+
 # Create main experiment directories
-BASE_OUTPUT_DIR="${PROJECT_ROOT}/outputs_new/main_experiments"
-BASE_LOG_DIR="${PROJECT_ROOT}/logs_new/main_experiments"
+# BASE_OUTPUT_DIR="${PROJECT_ROOT}/outputs_new/main_experiments"
+# BASE_LOG_DIR="${PROJECT_ROOT}/logs_new/main_experiments"
+BASE_OUTPUT_DIR="${PROJECT_ROOT}/outputs_new/${DATASET_CHOICE}"
+BASE_LOG_DIR="${PROJECT_ROOT}/logs_new/${DATASET_CHOICE}"
 
 mkdir -p ${BASE_OUTPUT_DIR}
 mkdir -p ${BASE_LOG_DIR}
@@ -24,12 +39,12 @@ workers=16
 seeds=(42 2020 2025 1234 888)
 
 # Algorithms to test
-# algorithms=(no_adapt lame t3a tent cotta sar foa zo_base cazo cazo_lit cozo)
-algorithms=(cozo)
+# algorithms=(no_adapt lame t3a tent cotta sar foa zo_base cazo cazo_lit cozo deyo rotta eta eata)
+algorithms=(eta)
 
 # GPU configuration - MODIFY THIS TO SET YOUR GPU COUNT
 GPU_COUNT=7  # Change this to your desired GPU count
-GPU_IDS=(0 1 2 3 4 5 6)  # Modify this array to match your available GPUs
+GPU_IDS=(0 2 3 4 5 6 7)  # Modify this array to match your available GPUs
 
 # ================================================================
 
@@ -66,6 +81,18 @@ get_algorithm_params() {
             ;;
         "sar")
             params="--margin_e0 0.4"
+            ;;
+        "eta")
+            params=""
+            ;;
+        "eata")
+            params=""
+            ;;
+        "deyo")
+            params=""
+            ;;
+        "rotta")
+            params=""
             ;;
         "foa")
             params="--num_prompts 3 --fitness_lambda 0.4"
@@ -119,11 +146,12 @@ run_gpu_experiments() {
             --batch_size ${batch_size} \
             --workers ${workers} \
             --seed ${seed} \
-            --data /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet \
-            --data_v2 /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenetv2 \
-            --data_sketch /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-sketch/sketch \
-            --data_corruption /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-c/imagenet-c \
-            --data_rendition /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-r/imagenet-r \
+            --data /media/DATA/ILSVRC2012 \
+            --data_v2 /media/DATA/imagenetv2/ \
+            --data_sketch /media/DATA/imagenet-sketch/sketch \
+            --data_corruption /media/DATA/imagenet-c \
+            --data_rendition /media/DATA/imagenet-r/imagenet-r \
+            --dataset_style ${DATASET_STYLE} \
             --output ${output_dir} \
             --root_log_dir ${log_dir} \
             --algorithm ${algorithm} \

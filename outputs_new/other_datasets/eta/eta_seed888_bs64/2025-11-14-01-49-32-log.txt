@@ -1,0 +1,9 @@
+2025-11-14 01:49:32,432 INFO    : CUDA_VISIBLE_DEVICES: 5
+2025-11-14 01:49:32,432 INFO    : Using GPU: 0
+2025-11-14 01:49:32,432 INFO    : Namespace(data='/media/DATA/ILSVRC2012', data_v2='/media/DATA/imagenetv2/', data_sketch='/media/DATA/imagenet-sketch/sketch', data_adv='/dockerdata/imagenet', data_corruption='/media/DATA/imagenet-c', data_rendition='/media/DATA/imagenet-r/imagenet-r', seed=888, gpu=0, debug=False, workers=16, batch_size=64, if_shuffle=True, algorithm='eta', continue_learning=False, level=5, corruption='gaussian_noise', quant=False, num_prompts=3, fitness_lambda=0.4, lambda_bp=30, num_samples=20, epsilon=0.1, lr=0.01, momentum=0.9, lambda_factor=0.1, beta1=0.9, beta2=0.999, eps=1e-08, margin_e0=2.763102111592855, output='/home/zjm/Workspace/CAZO/outputs_new/other_datasets/eta/eta_seed888_bs64/', tag='_seed888_bs64', root_log_dir='/home/zjm/Workspace/CAZO/logs_new/other_datasets/eta', pertub=13, adapter_layer='11', reduction_factor=48, adapter_style='parallel', mode='full', optimizer='sgd', beta=0.9, nu=0.8)
+2025-11-14 01:49:38,097 INFO    : rendition
+2025-11-14 01:49:41,570 INFO    : Test: [  0/469]	Time  3.256 ( 3.256)	Acc@1   0.00 (  0.00)	Acc@5   0.00 (  0.00)
+2025-11-14 01:49:43,956 INFO    : Test: [  5/469]	Time  0.425 ( 0.940)	Acc@1   0.00 (  0.00)	Acc@5   1.56 (  0.52)
+2025-11-14 01:49:46,066 INFO    : Test: [ 10/469]	Time  0.422 ( 0.705)	Acc@1   0.00 (  0.00)	Acc@5   0.00 (  0.28)
+2025-11-14 01:49:48,179 INFO    : Test: [ 15/469]	Time  0.423 ( 0.617)	Acc@1   0.00 (  0.00)	Acc@5   1.56 (  0.29)
+2025-11-14 01:49:50,294 INFO    : Test: [ 20/469]	Time  0.422 ( 0.571)	Acc@1   0.00 (  0.00)	Acc@5   0.00 (  0.30)

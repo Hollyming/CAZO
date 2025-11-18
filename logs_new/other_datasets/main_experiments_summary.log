@@ -1,0 +1,12 @@
+Main Experiments Started at 2025年 11月 14日 星期五 01:49:29 CST
+Algorithms: eta
+Seeds: 42 2020 2025 1234 888
+GPU Count: 7
+GPU IDs: 0 2 3 4 5 6 7
+Total experiments: 5
+============================================
+Experiment 0 (eta, seed 42) started at: 2025年 11月 14日 星期五 01:49:29 CST on GPU 0
+Experiment 2 (eta, seed 2025) started at: 2025年 11月 14日 星期五 01:49:29 CST on GPU 3
+Experiment 1 (eta, seed 2020) started at: 2025年 11月 14日 星期五 01:49:29 CST on GPU 2
+Experiment 3 (eta, seed 1234) started at: 2025年 11月 14日 星期五 01:49:29 CST on GPU 4
+Experiment 4 (eta, seed 888) started at: 2025年 11月 14日 星期五 01:49:29 CST on GPU 5

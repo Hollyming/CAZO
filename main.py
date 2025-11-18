@@ -21,6 +21,9 @@ import tta_library.tent as tent
 import tta_library.sar as sar
 import tta_library.cotta as cotta
 import tta_library.foa_bp as foa_bp
+import tta_library.rotta as rotta
+import tta_library.deyo as deyo
+import tta_library.eata as eata
 
 from tta_library.sam import SAM
 from tta_library.t3a import T3A
@@ -156,10 +159,12 @@ def get_args():
 
     # algorithm selection
     parser.add_argument('--algorithm', default='foa', type=str, help='supporting foa, sar, cotta and etc.')
+    parser.add_argument('--continue_learning', default=False, type=bool, help='whether to use continue learing or reset.')
 
     # dataset settings
     parser.add_argument('--level', default=5, type=int, help='corruption level of test(val) set.')
     parser.add_argument('--corruption', default='gaussian_noise', type=str, help='corruption type of test(val) set.')
+    parser.add_argument('--dataset_style', default='imagenet_c', type=str, help='dataset style: imagenet_c, imagenet_r_s_v2, other')
 
     # model settings
     parser.add_argument('--quant', default=False, action='store_true', help='whether to use quantized model in the experiment')
@@ -248,9 +253,14 @@ if __name__ == '__main__':
     # options for ImageNet-R/V2/Sketch are ['rendition', 'v2', 'sketch']
     # For ImageNet-R, the fitness_lambda of FOA should be set to 0.2
     # We advise parallelizing the experiments for FOA (K=28) on multiple GPUs, where each GPU only run a corruption
-    corruptions = ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-    # corruptions = ['rendition', 'v2', 'sketch']
-    # corruptions = ['gaussian_noise']
+    if args.dataset_style == 'imagenet_c':
+        corruptions = ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
+    elif args.dataset_style == 'imagenet_r_s_v2':
+        corruptions = ['rendition', 'v2', 'sketch']
+    elif args.dataset_style == 'other':
+        corruptions = ['gaussian_noise']
+    else:
+        raise NotImplementedError("Only imagenet_c and imagenet_r_s_v2 are supported for now.")
 
     # create model
     if args.quant:
@@ -382,6 +392,35 @@ if __name__ == '__main__':
         adapt_model = cotta.CoTTA(net, optimizer, steps=1, episodic=False)
     elif args.algorithm == 'lame':
         adapt_model = LAME(net)
+    elif args.algorithm == 'rotta':
+        net = rotta.configure_model(net)
+        params, _ = rotta.collect_params(net)
+        optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.0)
+        adapt_model = rotta.RoTTA(net, optimizer, nu=0.001, memory_size=64, 
+                                   update_frequency=64, steps=1, episodic=False)
+    elif args.algorithm == 'deyo':
+        net = deyo.configure_model(net)
+        params, _ = deyo.collect_params(net)
+        optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9)
+        adapt_model = deyo.DeYO(net, optimizer, num_classes=1000, 
+                                 reweight_ent=True, reweight_plpd=True,
+                                 plpd_threshold=0.2, margin=0.5, margin_e0=0.4,
+                                 aug_type='pixel', steps=1, episodic=False)
+    elif args.algorithm == 'eata':
+        net = eata.configure_model(net)
+        params, _ = eata.collect_params(net)
+        optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9)
+        adapt_model = eata.EATA(net, optimizer, num_classes=1000,
+                                 margin_e0=0.4, d_margin=0.05, 
+                                 fisher_alpha=2000.0, fishers=None,
+                                 steps=1, episodic=False)
+    elif args.algorithm == 'eta':
+        net = eata.configure_model(net)
+        params, _ = eata.collect_params(net)
+        optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9)
+        adapt_model = eata.ETA(net, optimizer, num_classes=1000,
+                                margin_e0=0.4, d_margin=0.05,
+                                steps=1, episodic=False)
     elif args.algorithm == 'no_adapt':
         adapt_model = net#直接validate_adapt
     else:
@@ -405,17 +444,20 @@ if __name__ == '__main__':
         logger.info(f"Under shift type {args.corruption} After {args.algorithm} Top-1 Accuracy: {top1:.6f} and Top-5 Accuracy: {top5:.6f} and ECE: {ece_loss:.6f}")
         corrupt_acc.append(top1)
         corrupt_ece.append(ece_loss)
-
-        # reset model before adapting on the next domain
-        if args.algorithm == 'no_adapt':
-            continue
-        else:
-            adapt_model.reset()
         
         logger.info(f'mean acc of corruption: {sum(corrupt_acc)/len(corrupt_acc) if len(corrupt_acc) else 0}')
         logger.info(f'mean ece of corruption: {sum(corrupt_ece)/len(corrupt_ece)*100 if len(corrupt_ece) else 0}')
         logger.info(f'corrupt acc list: {[_.item() for _ in corrupt_acc]}')
         logger.info(f'corrupt ece list: {[_*100 for _ in corrupt_ece]}')
+
+        # reset model before adapting on the next domain
+        if args.algorithm == 'no_adapt':
+            continue
+        elif args.continue_learning:
+            continue
+        else:
+            print("Resetting model to original weights...")
+            adapt_model.reset()
     
     # 结束训练时关闭 TensorBoard writer
     writer.close()  

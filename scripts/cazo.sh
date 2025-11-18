@@ -1,10 +1,10 @@
 #!/bin/bash
-PROJECT_ROOT=/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/Workspace/CAZO
+PROJECT_ROOT=/home/zjm/Workspace/CAZO
 # 切换到项目根目录
 cd ${PROJECT_ROOT}
 #--tag "_bs${batch_size}_lr${lr}_pertub${pertub}_adapter_layer${adapter_layer}_reduction_factor${reduction_factor}_${adapter_style}_epsilon${epsilon}_nu${nu}" 
 #seeds=(42 2020 2025 1234 888) 
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=7
 seed=42
 batch_size=64
 lr=0.01
@@ -20,20 +20,23 @@ nu=0.8  # Hessian diagonal estimation matrix decay factor (1-nu)D_{t-1} + nu * g
 
 # optimizer related parameters
 optimizer="sgd"  
-beta=0.9         
+beta=0.9
+continue_learning=True
 
 
 python ${PROJECT_ROOT}/main.py \
     --batch_size ${batch_size} \
     --workers 16 \
     --seed ${seed} \
-    --data /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet \
+    --continue_learning ${continue_learning} \
+    --data /media/DATA/ILSVRC2012 \
     --data_v2 /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenetv2 \
     --data_sketch /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-sketch/sketch \
-    --data_corruption /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-c/imagenet-c \
+    --data_corruption /media/DATA/imagenet-c \
     --data_rendition /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-r/imagenet-r \
-    --output ${PROJECT_ROOT}/outputs_new/other_datasets/cazo \
-    --root_log_dir ${PROJECT_ROOT}/logs_new/other_datasets/cazo \
+    --dataset_style "imagenet_c" \
+    --output ${PROJECT_ROOT}/outputs_new/continue_learing/cazo \
+    --root_log_dir ${PROJECT_ROOT}/logs_new/continue_learing/cazo \
     --algorithm "cazo" \
     --lr ${lr} \
     --pertub ${pertub} \

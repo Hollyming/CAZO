@@ -115,7 +115,7 @@ class FOA(nn.Module):
         save_dir = os.path.join('dataset', 'train_stats')
         os.makedirs(save_dir, exist_ok=True)
         
-        save_path = os.path.join(save_dir, f'train_info_adapter.pt')
+        save_path = os.path.join(save_dir, f'train_info_prompts3.pt')
         
         # 尝试加载已保存的统计信息
         if os.path.exists(save_path):

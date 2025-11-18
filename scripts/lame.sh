@@ -11,6 +11,7 @@ python3 ${PROJECT_ROOT}/main.py \
     --data_sketch /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-sketch/sketch \
     --data_corruption /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-c/imagenet-c \
     --data_rendition /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-r/imagenet-r \
+    --dataset_style "imagenet_c" \
     --output ${PROJECT_ROOT}/outputs_new/other_datasets \
     --root_log_dir ${PROJECT_ROOT}/logs_new/other_datasets \
     --algorithm "lame" \
