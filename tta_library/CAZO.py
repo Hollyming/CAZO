@@ -269,64 +269,6 @@ class CAZO(nn.Module):
         print('perturbations min/max:', z.min().item(), z.max().item())
         
         return final_outputs
-    
-    # def obtain_origin_stat(self, train_loader):
-    #     """
-    #     Calculate mean and variance of training set features, support saving and loading calculation results.
-
-    #     This function is used to calculate the mean and variance of training set (source domain) features for model quantization preparation.
-    #     This function first tries to load precalculated statistics from saved files.
-    #     If no saved data is found, it recalculates and saves the results.
-    #     First traverse the training set to extract features, then calculate the mean and variance of these features.
-    #     Finally, it prepares the quantized model for quick adaptation.
-
-    #     Args:
-    #     - train_loader: DataLoader type, training set data loader.
-
-    #     Returns:
-    #     None
-    #     """
-    #     print('===> Start calculating mean and variance')
-    #     save_dir = os.path.join('dataset', 'train_stats')
-    #     os.makedirs(save_dir, exist_ok=True)
-        
-    #     save_path = os.path.join(save_dir, f'train_info_adapter.pt')
-        
-    #     if os.path.exists(save_path):
-    #         print('===> Load precalculated mean and variance from file')
-    #         saved_data = torch.load(save_path)
-    #         self.train_info = saved_data['train_info']
-    #     else:
-    #         print('===> Start calculating mean and variance')
-    #         features = []
-    #         with torch.no_grad():
-    #             for _, dl in enumerate(train_loader):
-    #                 images = dl[0].cuda()               #dl[0] is image, dl[1] is label
-    #                 feature = self.model.layers_cls_features(images)    # extract image features from ViT model
-    #                 features.append(feature)
-    #             features = torch.cat(features, dim=0)
-    #             self.train_info = torch.std_mean(features, dim=0)# calculate mean and variance of source domain data features, dim=0 means calculating mean and variance of each feature
-    #         del features# release memory
-            
-    #         # save calculation results
-    #         print('===> Save calculation results to file')
-    #         torch.save({
-    #             'train_info': self.train_info,
-    #             'timestamp': time.strftime("%Y%m%d-%H%M%S")
-    #         }, save_path)
-        
-    #     for _, m in self.model.vit.named_modules():  # traverse all modules of ViT model
-    #         if type(m) == PTQSLBatchingQuantMatMul:  # if PTQSLBatchingQuantMatMul type
-    #             m._get_padding_parameters(
-    #                 torch.zeros((1,12,197,64)).cuda(),  # remove prompt tokens
-    #                 torch.zeros((1,12,64,197)).cuda()   # remove prompt tokens
-    #             )
-    #         elif type(m) == SoSPTQSLBatchingQuantMatMul:  # if SoSPTQSLBatchingQuantMatMul type
-    #             m._get_padding_parameters(
-    #                 torch.zeros((1,12,197,197)).cuda(),  # remove prompt tokens
-    #                 torch.zeros((1,12,197,64)).cuda()    # remove prompt tokens
-    #             )
-    #     print('===> Calculating mean and variance finished')
 
     def obtain_origin_stat(self, train_loader):
         print('===> begin calculating mean and variance')

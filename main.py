@@ -44,6 +44,7 @@ from models.adaformer import AdaFormerViT
 
 
 
+
 def validate_adapt(val_loader, model, args, writer):
     batch_time = AverageMeter('Time', ':6.3f')
     top1 = AverageMeter('Acc@1', ':6.2f')
@@ -168,6 +169,7 @@ def get_args():
 
     # model settings
     parser.add_argument('--quant', default=False, action='store_true', help='whether to use quantized model in the experiment')
+    parser.add_argument('--arch', default='vit_base', type=str, choices=['vit_base', 'resnet50'], help='model architecture: vit_base or resnet50')
 
     # foa settings
     parser.add_argument('--num_prompts', default=3, type=int, help='number of inserted prompts for test-time adaptation.')    
@@ -277,7 +279,13 @@ if __name__ == '__main__':
         quant_calibrator.batching_quant_calib()
     else:
         # full precision model
-        net = timm.create_model('vit_base_patch16_224', pretrained=True)
+        if args.arch == 'vit_base':
+            net = timm.create_model('vit_base_patch16_224', pretrained=True)
+        elif args.arch == 'resnet50':
+            from models.resnet import resnet50
+            net = resnet50(pretrained=True)
+        else:
+            raise ValueError(f'Unknown architecture: {args.arch}')
         
     net = net.cuda()
     net.eval()
@@ -376,6 +384,33 @@ if __name__ == '__main__':
     elif args.algorithm == 'foa':
         net = PromptViT(net, args.num_prompts).cuda()
         adapt_model = FOA(net, args.fitness_lambda)
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'foa_resnet':
+        import tta_library.foa_resnet as foa_resnet
+        from models.prompt_resnet import PromptResNet
+        net = foa_resnet.configure_model(net).cuda()
+        net = PromptResNet(args, net).cuda()
+        adapt_model = foa_resnet.FOA_ResNet(args, net, args.fitness_lambda)
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'cazo_resnet':
+        import tta_library.CAZO_resnet as CAZO_resnet
+        from models.prompt_resnet import PromptResNet
+        
+        net = CAZO_resnet.configure_model(net).cuda()
+        net = PromptResNet(args, net).cuda()
+        adapt_model = CAZO_resnet.CAZO_ResNet(
+            args=args,
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            pertub=args.pertub,
+            epsilon=args.epsilon,
+            optimizer_type=args.optimizer,
+            beta=args.beta,
+            nu=args.nu
+        )
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'sar':

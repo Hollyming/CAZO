@@ -5,13 +5,24 @@ from ..quant_layers.matmul import PTQSLBatchingQuantMatMul, SoSPTQSLBatchingQuan
 no_softmax = False
 no_postgelu = False
 
-bit = 6 # the bit of quantization
+bit = 8 # the bit of quantization
 conv_fc_name_list = ["qconv", "qlinear_qkv", "qlinear_proj", "qlinear_MLP_1", "qlinear_MLP_2", "qlinear_classifier", "qlinear_reduction"]
 matmul_name_list = [ "qmatmul_qk", "qmatmul_scorev"]
 w_bit = {name: bit for name in conv_fc_name_list}
 a_bit = {name: bit for name in conv_fc_name_list}
 A_bit = {name: bit for name in matmul_name_list}
 B_bit = {name: bit for name in matmul_name_list}
+
+def set_bitwidth(bit):
+    for name in w_bit.keys():
+        w_bit[name] = bit
+    for name in a_bit.keys():
+        a_bit[name] = bit
+    for name in A_bit.keys():
+        A_bit[name] = bit
+    for name in B_bit.keys():
+        B_bit[name] = bit
+
 
 ptqsl_conv2d_kwargs = {
     "metric": "hessian",
