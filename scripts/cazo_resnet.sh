@@ -7,7 +7,7 @@ cd ${PROJECT_ROOT}
 export CUDA_VISIBLE_DEVICES=7
 seed=42
 batch_size=64
-lr=0.01
+lr=0.1
 pertub=20
 # layer1：3 个 block → index 0, 1, 2 输出通道 256
 # layer2：4 个 block → index 3, 4, 5, 6 输出通道 512
@@ -26,7 +26,7 @@ nu=0.8  # Hessian diagonal estimation matrix decay factor (1-nu)D_{t-1} + nu * g
 # optimizer related parameters
 optimizer="sgd"  
 beta=0.9
-
+continue_learning=True  # 是否继续学习
 #     --continue_learning ${continue_learning} \
 
 
@@ -34,6 +34,7 @@ python ${PROJECT_ROOT}/main.py \
     --batch_size ${batch_size} \
     --workers 16 \
     --seed ${seed} \
+    --continue_learning ${continue_learning} \
     --data /home/DATA/imagenet \
     --data_v2 /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenetv2 \
     --data_sketch /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_2/user_mingjzhang/datasets/imagenet-sketch/sketch \
@@ -52,4 +53,4 @@ python ${PROJECT_ROOT}/main.py \
     --epsilon ${epsilon} \
     --nu ${nu} \
     --fitness_lambda ${fitness_lambda} \
-    --tag "_seed${seed}_bs${batch_size}_nu${nu}_lr${lr}_eps${epsilon}_reset"
+    --tag "_seed${seed}_bs${batch_size}_nu${nu}_lr${lr}_eps${epsilon}"
