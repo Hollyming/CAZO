@@ -41,6 +41,9 @@ from quant_library.quant_utils.quant_calib import HessianQuantCalibrator
 from models.vpt import PromptViT
 from models.vit_adapter import AdapterViT
 from models.adaformer import AdaFormerViT
+from models.deit_adapter import DeiTAdapter
+from models.swin_adapter import SwinAdapter
+from models.resnet_adapter import ResNetAdapter
 
 
 
@@ -169,7 +172,9 @@ def get_args():
 
     # model settings
     parser.add_argument('--quant', default=False, action='store_true', help='whether to use quantized model in the experiment')
-    parser.add_argument('--arch', default='vit_base', type=str, choices=['vit_base', 'resnet50'], help='model architecture: vit_base or resnet50')
+    parser.add_argument('--arch', default='vit_base', type=str, 
+                       choices=['vit_base', 'deit_base', 'swin_tiny', 'resnet50'], 
+                       help='model architecture: vit_base, deit_base, swin_tiny or resnet50')
 
     # foa settings
     parser.add_argument('--num_prompts', default=3, type=int, help='number of inserted prompts for test-time adaptation.')    
@@ -281,6 +286,10 @@ if __name__ == '__main__':
         # full precision model
         if args.arch == 'vit_base':
             net = timm.create_model('vit_base_patch16_224', pretrained=True)
+        elif args.arch == 'deit_base':
+            net = timm.create_model('deit_base_patch16_224', pretrained=True)
+        elif args.arch == 'swin_tiny':
+            net = timm.create_model('swin_tiny_patch4_window7_224', pretrained=True)
         elif args.arch == 'resnet50':
             from models.resnet import resnet50
             net = resnet50(pretrained=True)
@@ -293,11 +302,30 @@ if __name__ == '__main__':
 
 
 
+    # 定义一个辅助函数，根据arch选择对应的adapter wrapper
+    def wrap_model_with_adapter(net, args):
+        """根据模型架构选择合适的adapter wrapper"""
+        if args.arch == 'vit_base':
+            return AdaFormerViT(net, adapter_layer=args.adapter_layer,
+                               reduction_factor=args.reduction_factor, 
+                               adapter_style=args.adapter_style).cuda()
+        elif args.arch == 'deit_base':
+            return DeiTAdapter(net, adapter_layer=args.adapter_layer,
+                              reduction_factor=args.reduction_factor,
+                              adapter_style=args.adapter_style).cuda()
+        elif args.arch == 'swin_tiny':
+            return SwinAdapter(net, adapter_layer=args.adapter_layer,
+                              reduction_factor=args.reduction_factor,
+                              adapter_style=args.adapter_style).cuda()
+        elif args.arch == 'resnet50':
+            return ResNetAdapter(net, adapter_layer=args.adapter_layer,
+                                reduction_factor=args.reduction_factor).cuda()
+        else:
+            raise ValueError(f'Unsupported architecture for adapter: {args.arch}')
+    
     if args.algorithm == 'cozo':
-        from tta_library.COZO_Ablation import COZO_Ablation  # 添加COZO_Ablation导入
-        # 使用AdaFormerViT包装原始ViT模型
-        net = AdaFormerViT(net, adapter_layer=args.adapter_layer, 
-                           reduction_factor=args.reduction_factor, adapter_style=args.adapter_style).cuda()
+        from tta_library.COZO_Ablation import COZO_Ablation
+        net = wrap_model_with_adapter(net, args)
         adapt_model = COZO_Ablation(
             model=net,
             mode="cov_only",
@@ -313,8 +341,7 @@ if __name__ == '__main__':
 
     elif args.algorithm == 'cazo':
         from tta_library.CAZO import CAZO
-        net = AdaFormerViT(net, adapter_layer=args.adapter_layer, 
-                          reduction_factor=args.reduction_factor, adapter_style=args.adapter_style).cuda()
+        net = wrap_model_with_adapter(net, args)
         adapt_model = CAZO(
             model=net,
             fitness_lambda=args.fitness_lambda,
@@ -329,8 +356,7 @@ if __name__ == '__main__':
         adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'cazo_lit':
         from tta_library.CAZO_lit import CAZO_Lit
-        net = AdaFormerViT(net, adapter_layer=args.adapter_layer, 
-                          reduction_factor=args.reduction_factor, adapter_style=args.adapter_style).cuda()
+        net = wrap_model_with_adapter(net, args)
         adapt_model = CAZO_Lit(
             model=net,
             fitness_lambda=args.fitness_lambda,
@@ -343,10 +369,8 @@ if __name__ == '__main__':
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'zo_base':
-        from tta_library.zo_base import ZO_Base  # 导入ZO_Base算法
-        # 使用ZO_Base算法
-        net = AdaFormerViT(net, adapter_layer=args.adapter_layer, 
-                           reduction_factor=args.reduction_factor, adapter_style=args.adapter_style).cuda()
+        from tta_library.zo_base import ZO_Base
+        net = wrap_model_with_adapter(net, args)
         adapt_model = ZO_Base(
             model=net,
             fitness_lambda=args.fitness_lambda,

@@ -4,6 +4,9 @@ import numpy as np
 import time
 import os
 from models.adaformer import AdaFormerViT
+from models.deit_adapter import DeiTAdapter
+from models.swin_adapter import SwinAdapter
+from models.resnet_adapter import ResNetAdapter
 
 from utils.cli_utils import accuracy, AverageMeter
 from calibration_library.metrics import ECELoss
@@ -48,14 +51,15 @@ class CAZO(nn.Module):
     """
     CAZO: Zero-order optimization algorithm based on diagonal Hessian approximation
     This algorithm improves gradient estimation by sampling perturbation vectors using the inverse of diagonal Hessian estimation matrix
+    支持多种模型架构：AdaFormerViT, DeiTAdapter, SwinAdapter, ResNetAdapter
     """
-    def __init__(self, model: AdaFormerViT, fitness_lambda=0.4, lr=0.01, 
+    def __init__(self, model, fitness_lambda=0.4, lr=0.01, 
                  pertub=20, epsilon=0.1, optimizer_type='sgd', beta=0.9, nu=0.1):
         """
         Initialize CAZO algorithm
         
         Args:
-            model: AdaFormerViT model
+            model: 支持AdaFormerViT, DeiTAdapter, SwinAdapter, ResNetAdapter
             fitness_lambda: balance factor for fitness function
             lr: learning rate
             pertub: number of perturbations k
@@ -71,6 +75,9 @@ class CAZO(nn.Module):
         self.pertub = pertub
         
         self.model = model
+        # 检测模型类型
+        self.model_type = self._detect_model_type()
+        
         # ensure all adapter parameters do not require gradients
         for adapter in self.model.adapters.values():
             for param in adapter.parameters():
@@ -106,6 +113,104 @@ class CAZO(nn.Module):
         else:
             raise ValueError(f"Unsupported optimizer type: {optimizer_type}")
     
+    def _detect_model_type(self):
+        """自动检测模型类型"""
+        if isinstance(self.model, AdaFormerViT):
+            return 'vit'
+        elif isinstance(self.model, DeiTAdapter):
+            return 'deit'
+        elif isinstance(self.model, SwinAdapter):
+            return 'swin'
+        elif isinstance(self.model, ResNetAdapter):
+            return 'resnet'
+        else:
+            raise ValueError(f"Unsupported model type: {type(self.model)}")
+    
+    def _get_model_info(self):
+        """获取模型的层数和特征维度信息"""
+        if self.model_type in ['vit', 'deit']:
+            # ViT/DeiT: 获取transformer blocks数量和embed_dim
+            base_model = self.model.vit if self.model_type == 'vit' else self.model.deit
+            num_layers = len(base_model.blocks)
+            embed_dim = base_model.embed_dim
+            head_dim = base_model.blocks[0].attn.head_dim
+            return {
+                'num_layers': num_layers,
+                'embed_dim': embed_dim,
+                'head_dim': head_dim,
+                'feature_dim': num_layers * embed_dim  # 所有层的CLS token特征拼接
+            }
+        elif self.model_type == 'swin':
+            # Swin Transformer: 获取所有blocks总数和各stage维度
+            total_blocks = self.model.total_blocks
+            stage_dims = []
+            for stage_idx, layer in enumerate(self.model.swin.layers):
+                stage_dim = int(self.model.swin.embed_dim * 2 ** stage_idx)
+                stage_dims.extend([stage_dim] * len(layer.blocks))
+            feature_dim = sum(stage_dims)  # 所有block特征拼接
+            return {
+                'num_layers': total_blocks,
+                'stage_dims': stage_dims,
+                'feature_dim': feature_dim
+            }
+        elif self.model_type == 'resnet':
+            # ResNet: 获取所有bottleneck数量和维度
+            total_blocks = self.model.total_blocks
+            block_dims = self.model.block_dims
+            feature_dim = sum(block_dims)  # 所有block特征拼接
+            return {
+                'num_layers': total_blocks,
+                'block_dims': block_dims,
+                'feature_dim': feature_dim
+            }
+    
+    def _extract_features(self, images, with_adapter=False):
+        """根据模型类型提取特征"""
+        if with_adapter:
+            if self.model_type in ['vit', 'deit']:
+                return self.model.layers_cls_features_with_adapters(images)
+            elif self.model_type == 'swin':
+                return self.model.layers_features_with_adapters(images)
+            elif self.model_type == 'resnet':
+                return self.model.layers_features_with_adapters(images)
+        else:
+            if self.model_type in ['vit', 'deit']:
+                return self.model.layers_cls_features(images)
+            elif self.model_type == 'swin':
+                return self.model.layers_features(images)
+            elif self.model_type == 'resnet':
+                return self.model.layers_features(images)
+    
+    def _get_classification_features(self, images):
+        """获取用于分类的特征"""
+        if self.model_type in ['vit', 'deit']:
+            # 提取最后一层的CLS token特征
+            features = self.model.layers_cls_features_with_adapters(images)
+            model_info = self._get_model_info()
+            embed_dim = model_info['embed_dim']
+            return features[:, -embed_dim:]
+        elif self.model_type == 'swin':
+            # Swin使用全局平均池化后的特征
+            x = self.model.forward_features(images)
+            return x
+        elif self.model_type == 'resnet':
+            # ResNet使用最后的全局平均池化特征
+            x = self.model.forward_features(images)
+            x = self.model.resnet.avgpool(x)
+            x = x.view(x.size(0), -1)
+            return x
+    
+    def _get_classifier_output(self, cls_features):
+        """通过分类头获取输出"""
+        if self.model_type in ['vit', 'deit']:
+            base_model = self.model.vit if self.model_type == 'vit' else self.model.deit
+            return base_model.head(cls_features)
+        elif self.model_type == 'swin':
+            # Swin: cls_features已经是(B, C)，直接用fc层
+            return self.model.swin.head.fc(cls_features)
+        elif self.model_type == 'resnet':
+            return self.model.resnet.fc(cls_features)
+    
     def _update_hist(self, batch_mean):
         if self.hist_stat is None:
             self.hist_stat = batch_mean
@@ -116,7 +221,19 @@ class CAZO(nn.Module):
         if self.hist_stat is None:
             return None
         else:
-            return self.train_info[1][-768:] - self.hist_stat
+            # return self.train_info[1] [-768:] - self.hist_stat  # 默认使用最后768维度作为shift vector
+            if self.model_type in ['vit', 'deit']:
+                model_info = self._get_model_info()
+                embed_dim = model_info['embed_dim']
+                return self.train_info[1][-embed_dim:] - self.hist_stat
+            elif self.model_type == 'swin':
+                # Swin: 使用最后一个stage的维度(768 for Swin-Tiny)
+                final_dim = self.model.swin.num_features
+                return self.train_info[1][-final_dim:] - self.hist_stat[-final_dim:]
+            elif self.model_type == 'resnet':
+                model_info = self._get_model_info()
+                final_dim = model_info['block_dims'][-1]
+                return self.train_info[1][-final_dim:] - self.hist_stat[-final_dim:]
     
     def _sample_perturbations(self, num_samples, dim):
         """
@@ -213,9 +330,16 @@ class CAZO(nn.Module):
             self._apply_perturbation(z, sign=1)
             outputs_pos, loss_pos, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask
+                shift_vector, self.imagenet_mask, self.model_type
             )
-            batch_means.append(batch_mean[-768:].unsqueeze(0))
+            # 根据模型类型提取合适维度的batch_mean
+            model_info = self._get_model_info()
+            if self.model_type in ['vit', 'deit']:
+                embed_dim = model_info['embed_dim']
+                batch_means.append(batch_mean[-embed_dim:].unsqueeze(0))
+            elif self.model_type in ['swin', 'resnet']:
+                # Swin和ResNet使用全部特征
+                batch_means.append(batch_mean.unsqueeze(0))
             del batch_mean
             
             # negative perturbation: f(x - εz)
@@ -223,9 +347,13 @@ class CAZO(nn.Module):
             self._apply_perturbation(z, sign=-1)
             outputs_neg, loss_neg, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask
+                shift_vector, self.imagenet_mask, self.model_type
             )
-            batch_means.append(batch_mean[-768:].unsqueeze(0))
+            if self.model_type in ['vit', 'deit']:
+                embed_dim = model_info['embed_dim']
+                batch_means.append(batch_mean[-embed_dim:].unsqueeze(0))
+            elif self.model_type in ['swin', 'resnet']:
+                batch_means.append(batch_mean.unsqueeze(0))
             del batch_mean
             
             # use formula: ĝ(x_t+1) = 1/k ∑ (L(w_t + μū_i) - L(w_t - μū_i))/(2μ) * ū_i
@@ -257,7 +385,7 @@ class CAZO(nn.Module):
         
         final_outputs, self.final_loss, _ = forward_and_get_loss(
             x, self.model, self.fitness_lambda, self.train_info,
-            shift_vector, self.imagenet_mask
+            shift_vector, self.imagenet_mask, self.model_type
         )
         losses.append(self.final_loss.item())
         
@@ -276,11 +404,13 @@ class CAZO(nn.Module):
         save_dir = os.path.join('dataset', 'train_stats')
         os.makedirs(save_dir, exist_ok=True)
         
-        save_path = os.path.join(save_dir, f'train_info_adapter.pt')
+        # 根据模型类型生成不同的文件名
+        model_name = f'{self.model_type}_adapter'
+        save_path = os.path.join(save_dir, f'train_info_{model_name}.pt')
         
         # 尝试加载已保存的统计信息
         if os.path.exists(save_path):
-            print('===> 从文件加载预计算的均值和方差')
+            print(f'===> 从文件加载预计算的均值和方差: {save_path}')
             saved_data = torch.load(save_path)
             self.train_info = saved_data['train_info']
         else:
@@ -289,34 +419,40 @@ class CAZO(nn.Module):
             with torch.no_grad():
                 for _, dl in enumerate(train_loader):
                     images = dl[0].cuda()
-                    feature = self.model.layers_cls_features(images)
+                    # 根据模型类型提取特征
+                    feature = self._extract_features(images, with_adapter=False)
                     features.append(feature)
-                    # break
                 features = torch.cat(features, dim=0)
                 self.train_info = torch.std_mean(features, dim=0)
             del features
 
             # 保存计算结果
-            print('===> 保存计算结果到文件')
+            print(f'===> 保存计算结果到文件: {save_path}')
             torch.save({
                 'train_info': self.train_info,
+                'model_type': self.model_type,
                 'timestamp': time.strftime("%Y%m%d-%H%M%S")
             }, save_path)
 
-        # preparing quantized model for prompt adaptation
-        num_layers = len(self.model.vit.blocks)  # 自动检测层数，vit_base_patch16_224有12层
-        head_dim = self.model.vit.blocks[0].attn.head_dim  # 自动检测head维度，vit_base_patch16_224的head维度是64
-        for _, m in self.model.vit.named_modules():  # 遍历ViT模型的所有模块
-            if type(m) == PTQSLBatchingQuantMatMul:  # 如果是PTQSLBatchingQuantMatMul类型
-                m._get_padding_parameters(
-                    torch.zeros((1,num_layers,197,head_dim)).cuda(),  # 移除prompt tokens
-                    torch.zeros((1,num_layers,64,197)).cuda()   # 移除prompt tokens
-                )
-            elif type(m) == SoSPTQSLBatchingQuantMatMul:  # 如果是SoSPTQSLBatchingQuantMatMul类型
-                m._get_padding_parameters(
-                    torch.zeros((1,num_layers,197,197)).cuda(),  # 移除prompt tokens
-                    torch.zeros((1,num_layers,197,head_dim)).cuda()    # 移除prompt tokens
-                )
+        # preparing quantized model (仅对ViT/DeiT有效)
+        if self.model_type in ['vit', 'deit']:
+            model_info = self._get_model_info()
+            num_layers = model_info['num_layers']
+            head_dim = model_info['head_dim']
+            
+            base_model = self.model.vit if self.model_type == 'vit' else self.model.deit
+            for _, m in base_model.named_modules():
+                if type(m) == PTQSLBatchingQuantMatMul:
+                    m._get_padding_parameters(
+                        torch.zeros((1, num_layers, 197, head_dim)).cuda(),
+                        torch.zeros((1, num_layers, head_dim, 197)).cuda()
+                    )
+                elif type(m) == SoSPTQSLBatchingQuantMatMul:
+                    m._get_padding_parameters(
+                        torch.zeros((1, num_layers, 197, 197)).cuda(),
+                        torch.zeros((1, num_layers, 197, head_dim)).cuda()
+                    )
+        
         print('===> 计算均值和方差结束')
 
     def reset(self):
@@ -342,22 +478,57 @@ def softmax_entropy(x: torch.Tensor) -> torch.Tensor:
 
 criterion_mse = nn.MSELoss(reduction='none').cuda()
 
-def forward_and_get_loss(images, model: AdaFormerViT, fitness_lambda, train_info, shift_vector, imagenet_mask):
+def forward_and_get_loss(images, model, fitness_lambda, train_info, shift_vector, imagenet_mask, model_type):
     """Forward propagation and calculate loss"""
-    features = model.layers_cls_features_with_adapters(images)# extract 12 layer cls features, turn (64,12*768)=(64,9216)
-    cls_features = features[:, -768:] # the feature of classification token, 768-dimensional feature of the last classification token of ViT model
-    batch_std, batch_mean = torch.std_mean(features, dim=0) #OOD domain data feature mean and variance
-    std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])#ID and OOD domain data feature MSE loss
-    # NOTE: $lambda$ should be 0.2 for ImageNet-R!!
+    if model_type in ['vit', 'deit']:
+        # ViT/DeiT: 提取所有层的CLS token特征
+        features = model.layers_cls_features_with_adapters(images)
+        # 获取embed_dim
+        base_model = model.vit if model_type == 'vit' else model.deit
+        embed_dim = base_model.embed_dim
+        cls_features = features[:, -embed_dim:]
+    elif model_type == 'swin':
+        # Swin Transformer: 提取所有block的平均特征
+        features = model.layers_features_with_adapters(images)
+        # 使用前向传播获取最终分类特征
+        cls_features = model.forward_features(images)
+    elif model_type == 'resnet':
+        # ResNet: 提取所有block的平均池化特征
+        features = model.layers_features_with_adapters(images)
+        # 获取最终分类特征
+        x = model.forward_features(images)
+        cls_features = model.resnet.avgpool(x)
+        cls_features = cls_features.view(cls_features.size(0), -1)
+    
+    batch_std, batch_mean = torch.std_mean(features, dim=0)
+    std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])
     discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
     
-    output = model.vit.head(cls_features)# through classification head, map cls_features to classification output
+    # 通过分类头获取输出
+    if model_type in ['vit', 'deit']:
+        base_model = model.vit if model_type == 'vit' else model.deit
+        output = base_model.head(cls_features)
+    elif model_type == 'swin':
+        # Swin: cls_features已经是(B, C)，直接用fc层
+        output = model.swin.head.fc(cls_features)
+    elif model_type == 'resnet':
+        output = model.resnet.fc(cls_features)
+    
     if imagenet_mask is not None:
-        output = output[:, imagenet_mask]# if needed, use imagenet_mask to filter output
-    entropy_loss = softmax_entropy(output).sum()# sum over batch to get entropy loss
+        output = output[:, imagenet_mask]
+    
+    entropy_loss = softmax_entropy(output).sum()
     loss = discrepancy_loss + entropy_loss
+    
     if shift_vector is not None:
-        output = model.vit.head(cls_features + 1. * shift_vector)# add activate shift offset, cover original output
+        if model_type in ['vit', 'deit']:
+            base_model = model.vit if model_type == 'vit' else model.deit
+            output = base_model.head(cls_features + 1. * shift_vector)
+        elif model_type == 'swin':
+            output = model.swin.head.fc(cls_features + 1. * shift_vector)
+        elif model_type == 'resnet':
+            output = model.resnet.fc(cls_features + 1. * shift_vector)
+        
         if imagenet_mask is not None:
             output = output[:, imagenet_mask]
 
