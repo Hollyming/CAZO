@@ -35,79 +35,90 @@ mkdir -p ${BASE_LOG_DIR}
 batch_size=64
 workers=16
 
+# Architectures to test
+archs=(deit_base swin_tiny)  # Options: vit_base, deit_base, swin_tiny, resnet50
+
 # Seeds for experiments
 seeds=(42 2020 2025 1234 888)
 
 # Algorithms to test
 # algorithms=(no_adapt lame t3a tent cotta sar foa zo_base cazo cazo_lit cozo deyo rotta eta eata)
-algorithms=(eta)
+algorithms=(cazo)
 
 # GPU configuration - MODIFY THIS TO SET YOUR GPU COUNT
-GPU_COUNT=7  # Change this to your desired GPU count
-GPU_IDS=(0 2 3 4 5 6 7)  # Modify this array to match your available GPUs
+GPU_COUNT=5  # Change this to your desired GPU count
+GPU_IDS=(1 2 5 6 7)  # Modify this array to match your available GPUs
 
 # ================================================================
 
 # Create summary log
 MAIN_SUMMARY_LOG="${BASE_LOG_DIR}/main_experiments_summary.log"
 echo "Main Experiments Started at $(date)" > ${MAIN_SUMMARY_LOG}
+echo "Architectures: ${archs[@]}" >> ${MAIN_SUMMARY_LOG}
 echo "Algorithms: ${algorithms[@]}" >> ${MAIN_SUMMARY_LOG}
 echo "Seeds: ${seeds[@]}" >> ${MAIN_SUMMARY_LOG}
 echo "GPU Count: ${GPU_COUNT}" >> ${MAIN_SUMMARY_LOG}
 echo "GPU IDs: ${GPU_IDS[@]}" >> ${MAIN_SUMMARY_LOG}
-echo "Total experiments: $((${#algorithms[@]} * ${#seeds[@]}))" >> ${MAIN_SUMMARY_LOG}
+echo "Total experiments: $((${#archs[@]} * ${#algorithms[@]} * ${#seeds[@]}))" >> ${MAIN_SUMMARY_LOG}
 echo "============================================" >> ${MAIN_SUMMARY_LOG}
 
 # Function to get algorithm-specific parameters
 get_algorithm_params() {
     local algorithm=$1
+    local arch=$2
     local params=""
+    
+    # Determine reduction_factor based on architecture
+    local reduction_factor=384  # default for vit_base, deit_base
+    if [ "${arch}" == "swin_tiny" ] || [ "${arch}" == "resnet50" ]; then
+        reduction_factor=48
+    fi
     
     case ${algorithm} in
         "no_adapt")
-            params=""
+            params="--arch ${arch}"
             ;;
         "lame")
-            params=""
+            params="--arch ${arch}"
             ;;
         "t3a")
-            params=""
+            params="--arch ${arch}"
             ;;
         "tent")
-            params=""
+            params="--arch ${arch}"
             ;;
         "cotta")
-            params=""
+            params="--arch ${arch}"
             ;;
         "sar")
-            params="--margin_e0 0.4"
+            params="--arch ${arch} --margin_e0 0.4"
             ;;
         "eta")
-            params=""
+            params="--arch ${arch}"
             ;;
         "eata")
-            params=""
+            params="--arch ${arch}"
             ;;
         "deyo")
-            params=""
+            params="--arch ${arch}"
             ;;
         "rotta")
-            params=""
+            params="--arch ${arch}"
             ;;
         "foa")
-            params="--num_prompts 3 --fitness_lambda 0.4"
+            params="--arch ${arch} --num_prompts 3 --fitness_lambda 0.4"
             ;;
         "zo_base")
-            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1"
+            params="--arch ${arch} --lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor ${reduction_factor} --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1"
             ;;
         "cazo")
-            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
+            params="--arch ${arch} --lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor ${reduction_factor} --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
             ;;
         "cazo_lit")
-            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
+            params="--arch ${arch} --lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor ${reduction_factor} --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --nu 0.8 --fitness_lambda 0.4"
             ;;
         "cozo")
-            params="--lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor 384 --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --fitness_lambda 0.4 --mode cov_only"
+            params="--arch ${arch} --lr 0.01 --pertub 20 --adapter_layer 3 --reduction_factor ${reduction_factor} --adapter_style parallel --optimizer sgd --beta 0.9 --epsilon 0.1 --fitness_lambda 0.4 --mode cov_only"
             ;;
     esac
     
@@ -122,34 +133,34 @@ run_gpu_experiments() {
     echo "GPU ${gpu_id}: Starting ${#exp_list[@]} experiments"
     
     for exp_info in "${exp_list[@]}"; do
-        # Parse experiment info: "algorithm:seed:exp_id"
-        IFS=':' read -r algorithm seed exp_id <<< "${exp_info}"
+        # Parse experiment info: "algorithm:seed:arch:exp_id"
+        IFS=':' read -r algorithm seed arch exp_id <<< "${exp_info}"
         
-        echo "GPU ${gpu_id}: Starting experiment ${exp_id} - ${algorithm} with seed ${seed}"
+        echo "GPU ${gpu_id}: Starting experiment ${exp_id} - ${algorithm} (${arch}) with seed ${seed}"
         
-        # Create algorithm-specific directories
-        local output_dir="${BASE_OUTPUT_DIR}/${algorithm}"
-        local log_dir="${BASE_LOG_DIR}/${algorithm}"
+        # Create algorithm-specific directories with arch subdirectory
+        local output_dir="${BASE_OUTPUT_DIR}/${arch}/${algorithm}"
+        local log_dir="${BASE_LOG_DIR}/${arch}/${algorithm}"
         mkdir -p ${output_dir}
         mkdir -p ${log_dir}
         
         # Get algorithm parameters
-        local algo_params=$(get_algorithm_params ${algorithm})
-        local tag="_seed${seed}_bs${batch_size}"
+        local algo_params=$(get_algorithm_params ${algorithm} ${arch})
+        local tag="_seed${seed}_bs${batch_size}_${arch}"
         
         # Log experiment start
         local start_time=$(date)
-        echo "Experiment ${exp_id} (${algorithm}, seed ${seed}) started at: ${start_time} on GPU ${gpu_id}" >> ${MAIN_SUMMARY_LOG}
+        echo "Experiment ${exp_id} (${algorithm}, ${arch}, seed ${seed}) started at: ${start_time} on GPU ${gpu_id}" >> ${MAIN_SUMMARY_LOG}
         
         # Run experiment
         CUDA_VISIBLE_DEVICES=${gpu_id} python ${PROJECT_ROOT}/main.py \
             --batch_size ${batch_size} \
             --workers ${workers} \
             --seed ${seed} \
-            --data /media/DATA/ILSVRC2012 \
+            --data /home/DATA/imagenet \
             --data_v2 /media/DATA/imagenetv2/ \
             --data_sketch /media/DATA/imagenet-sketch/sketch \
-            --data_corruption /media/DATA/imagenet-c \
+            --data_corruption /home/DATA/imagenet-c \
             --data_rendition /media/DATA/imagenet-r/imagenet-r \
             --dataset_style ${DATASET_STYLE} \
             --output ${output_dir} \
@@ -163,11 +174,11 @@ run_gpu_experiments() {
         
         # Log experiment completion
         if [ ${exit_code} -eq 0 ]; then
-            echo "Experiment ${exp_id} (${algorithm}, seed ${seed}) completed successfully at: ${end_time}" >> ${MAIN_SUMMARY_LOG}
-            echo "GPU ${gpu_id}: ✓ Experiment ${exp_id} completed - ${algorithm} seed ${seed}"
+            echo "Experiment ${exp_id} (${algorithm}, ${arch}, seed ${seed}) completed successfully at: ${end_time}" >> ${MAIN_SUMMARY_LOG}
+            echo "GPU ${gpu_id}: ✓ Experiment ${exp_id} completed - ${algorithm} (${arch}) seed ${seed}"
         else
-            echo "ERROR: Experiment ${exp_id} (${algorithm}, seed ${seed}) failed at: ${end_time}" >> ${MAIN_SUMMARY_LOG}
-            echo "GPU ${gpu_id}: ✗ Experiment ${exp_id} failed - ${algorithm} seed ${seed}"
+            echo "ERROR: Experiment ${exp_id} (${algorithm}, ${arch}, seed ${seed}) failed at: ${end_time}" >> ${MAIN_SUMMARY_LOG}
+            echo "GPU ${gpu_id}: ✗ Experiment ${exp_id} failed - ${algorithm} (${arch}) seed ${seed}"
         fi
     done
     
@@ -181,10 +192,12 @@ echo "Distributing experiments across ${GPU_COUNT} GPUs..."
 experiment_list=()
 experiment_id=0
 
-for algorithm in "${algorithms[@]}"; do
-    for seed in "${seeds[@]}"; do
-        experiment_list+=("${algorithm}:${seed}:${experiment_id}")
-        experiment_id=$((experiment_id + 1))
+for arch in "${archs[@]}"; do
+    for algorithm in "${algorithms[@]}"; do
+        for seed in "${seeds[@]}"; do
+            experiment_list+=("${algorithm}:${seed}:${arch}:${experiment_id}")
+            experiment_id=$((experiment_id + 1))
+        done
     done
 done
 

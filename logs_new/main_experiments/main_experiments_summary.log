@@ -1,15 +1,23 @@
-Main Experiments Started at 2025年 11月 12日 星期三 21:51:30 CST
-Algorithms: deyo
-Seeds: 1234
-GPU Count: 1
-GPU IDs: 2
-Total experiments: 1
+Main Experiments Started at 2026年 01月 25日 星期日 09:45:19 CST
+Architectures: deit_base swin_tiny
+Algorithms: cazo
+Seeds: 42 2020 2025 1234 888
+GPU Count: 5
+GPU IDs: 1 2 5 6 7
+Total experiments: 10
 ============================================
-Experiment 0 (deyo, seed 1234) started at: 2025年 11月 12日 星期三 21:51:30 CST on GPU 2
-Experiment 17 (eata, seed 2025) completed successfully at: 2025年 11月 12日 星期三 22:54:14 CST
-Experiment 16 (eata, seed 2020) completed successfully at: 2025年 11月 12日 星期三 23:02:01 CST
-Experiment 0 (deyo, seed 1234) completed successfully at: 2025年 11月 12日 星期三 23:59:15 CST
-
-All experiments completed at 2025年 11月 12日 星期三 23:59:15 CST
-Results saved to: /home/zjm/Workspace/CAZO/outputs_new/main_experiments
-Logs saved to: /home/zjm/Workspace/CAZO/logs_new/main_experiments
+Experiment 0 (cazo, deit_base, seed 42) started at: 2026年 01月 25日 星期日 09:45:19 CST on GPU 1
+Experiment 2 (cazo, deit_base, seed 2025) started at: 2026年 01月 25日 星期日 09:45:19 CST on GPU 5
+Experiment 1 (cazo, deit_base, seed 2020) started at: 2026年 01月 25日 星期日 09:45:19 CST on GPU 2
+Experiment 4 (cazo, deit_base, seed 888) started at: 2026年 01月 25日 星期日 09:45:19 CST on GPU 7
+Experiment 3 (cazo, deit_base, seed 1234) started at: 2026年 01月 25日 星期日 09:45:19 CST on GPU 6
+Experiment 2 (cazo, deit_base, seed 2025) completed successfully at: 2026年 01月 25日 星期日 19:10:25 CST
+Experiment 7 (cazo, swin_tiny, seed 2025) started at: 2026年 01月 25日 星期日 19:10:25 CST on GPU 5
+Experiment 0 (cazo, deit_base, seed 42) completed successfully at: 2026年 01月 25日 星期日 19:14:25 CST
+Experiment 5 (cazo, swin_tiny, seed 42) started at: 2026年 01月 25日 星期日 19:14:25 CST on GPU 1
+Experiment 1 (cazo, deit_base, seed 2020) completed successfully at: 2026年 01月 25日 星期日 19:18:41 CST
+Experiment 6 (cazo, swin_tiny, seed 2020) started at: 2026年 01月 25日 星期日 19:18:41 CST on GPU 2
+Experiment 4 (cazo, deit_base, seed 888) completed successfully at: 2026年 01月 25日 星期日 20:49:46 CST
+Experiment 9 (cazo, swin_tiny, seed 888) started at: 2026年 01月 25日 星期日 20:49:46 CST on GPU 7
+Experiment 3 (cazo, deit_base, seed 1234) completed successfully at: 2026年 01月 25日 星期日 21:31:56 CST
+Experiment 8 (cazo, swin_tiny, seed 1234) started at: 2026年 01月 25日 星期日 21:31:56 CST on GPU 6
