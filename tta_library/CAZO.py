@@ -54,7 +54,7 @@ class CAZO(nn.Module):
     支持多种模型架构：AdaFormerViT, DeiTAdapter, SwinAdapter, ResNetAdapter
     """
     def __init__(self, model, fitness_lambda=0.4, lr=0.01, 
-                 pertub=20, epsilon=0.1, optimizer_type='sgd', beta=0.9, nu=0.1):
+                 pertub=20, epsilon=0.1, optimizer_type='sgd', beta=0.9, nu=0.1, use_pure_entropy=False):
         """
         Initialize CAZO algorithm
         
@@ -67,12 +67,14 @@ class CAZO(nn.Module):
             optimizer_type: optimizer type, 'sgd' or 'sgd_momentum'
             beta: momentum coefficient
             nu: decay factor for diagonal Hessian estimation matrix
+            use_pure_entropy: if True, only use entropy loss without mse loss
         """
         super().__init__()
         self.fitness_lambda = fitness_lambda
         self.lr = lr
         self.epsilon = epsilon
         self.pertub = pertub
+        self.use_pure_entropy = use_pure_entropy
         
         self.model = model
         # 检测模型类型
@@ -330,7 +332,7 @@ class CAZO(nn.Module):
             self._apply_perturbation(z, sign=1)
             outputs_pos, loss_pos, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask, self.model_type
+                shift_vector, self.imagenet_mask, self.model_type, self.use_pure_entropy
             )
             # 根据模型类型提取合适维度的batch_mean
             model_info = self._get_model_info()
@@ -347,7 +349,7 @@ class CAZO(nn.Module):
             self._apply_perturbation(z, sign=-1)
             outputs_neg, loss_neg, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask, self.model_type
+                shift_vector, self.imagenet_mask, self.model_type, self.use_pure_entropy
             )
             if self.model_type in ['vit', 'deit']:
                 embed_dim = model_info['embed_dim']
@@ -385,7 +387,7 @@ class CAZO(nn.Module):
         
         final_outputs, self.final_loss, _ = forward_and_get_loss(
             x, self.model, self.fitness_lambda, self.train_info,
-            shift_vector, self.imagenet_mask, self.model_type
+            shift_vector, self.imagenet_mask, self.model_type, self.use_pure_entropy
         )
         losses.append(self.final_loss.item())
         
@@ -478,7 +480,7 @@ def softmax_entropy(x: torch.Tensor) -> torch.Tensor:
 
 criterion_mse = nn.MSELoss(reduction='none').cuda()
 
-def forward_and_get_loss(images, model, fitness_lambda, train_info, shift_vector, imagenet_mask, model_type):
+def forward_and_get_loss(images, model, fitness_lambda, train_info, shift_vector, imagenet_mask, model_type, use_pure_entropy=False):
     """Forward propagation and calculate loss"""
     if model_type in ['vit', 'deit']:
         # ViT/DeiT: 提取所有层的CLS token特征
@@ -501,8 +503,13 @@ def forward_and_get_loss(images, model, fitness_lambda, train_info, shift_vector
         cls_features = cls_features.view(cls_features.size(0), -1)
     
     batch_std, batch_mean = torch.std_mean(features, dim=0)
-    std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])
-    discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    
+    # 根据use_pure_entropy参数决定是否计算discrepancy_loss
+    if not use_pure_entropy:
+        std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])
+        discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    else:
+        discrepancy_loss = 0.0
     
     # 通过分类头获取输出
     if model_type in ['vit', 'deit']:
@@ -518,7 +525,7 @@ def forward_and_get_loss(images, model, fitness_lambda, train_info, shift_vector
         output = output[:, imagenet_mask]
     
     entropy_loss = softmax_entropy(output).sum()
-    loss = discrepancy_loss + entropy_loss
+    loss = entropy_loss if use_pure_entropy else (discrepancy_loss + entropy_loss)
     
     if shift_vector is not None:
         if model_type in ['vit', 'deit']:

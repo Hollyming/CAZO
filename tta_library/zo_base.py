@@ -52,7 +52,7 @@ class ZO_Base(nn.Module):
     """
     def __init__(self, model: AdaFormerViT, fitness_lambda=0.4, lr=0.01, 
                  pertub=20, epsilon=0.1,
-                 optimizer_type='sgd', beta=0.9):
+                 optimizer_type='sgd', beta=0.9, use_pure_entropy=False):
         """
         初始化ZO_Base算法
         
@@ -65,12 +65,14 @@ class ZO_Base(nn.Module):
             epsilon: 扰动大小ε
             optimizer_type: 优化器类型，'sgd'或'sgd_momentum'
             beta: 动量系数
+            use_pure_entropy: if True, only use entropy loss without mse loss
         """
         super().__init__()
         self.fitness_lambda = fitness_lambda
         self.lr = lr
         self.epsilon = epsilon
-        self.pertub = pertub        
+        self.pertub = pertub
+        self.use_pure_entropy = use_pure_entropy        
         self.model = model
         # 确保所有adapter参数不需要梯度
         for adapter in self.model.adapters.values():
@@ -176,7 +178,7 @@ class ZO_Base(nn.Module):
             self._apply_perturbation(z, sign=1)
             outputs_pos, loss_pos, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask
+                shift_vector, self.imagenet_mask, self.use_pure_entropy
             )
             batch_means.append(batch_mean[-768:].unsqueeze(0))
             del batch_mean
@@ -186,7 +188,7 @@ class ZO_Base(nn.Module):
             self._apply_perturbation(z, sign=-1)
             outputs_neg, loss_neg, batch_mean = forward_and_get_loss(
                 x, self.model, self.fitness_lambda, self.train_info, 
-                shift_vector, self.imagenet_mask
+                shift_vector, self.imagenet_mask, self.use_pure_entropy
             )
             batch_means.append(batch_mean[-768:].unsqueeze(0))
             del batch_mean
@@ -210,7 +212,7 @@ class ZO_Base(nn.Module):
         # 计算最终输出和损失
         final_outputs, self.final_loss, _ = forward_and_get_loss(
             x, self.model, self.fitness_lambda, self.train_info,
-            shift_vector, self.imagenet_mask
+            shift_vector, self.imagenet_mask, self.use_pure_entropy
         )
         losses.append(self.final_loss.item())
         
@@ -307,16 +309,21 @@ def softmax_entropy(x: torch.Tensor) -> torch.Tensor:
 
 criterion_mse = nn.MSELoss(reduction='none').cuda()
 
-def forward_and_get_loss(images, model: AdaFormerViT, fitness_lambda, train_info, shift_vector, imagenet_mask):
+def forward_and_get_loss(images, model: AdaFormerViT, fitness_lambda, train_info, shift_vector, imagenet_mask, use_pure_entropy=False):
     """前向传播并计算损失"""
     features = model.layers_cls_features_with_adapters(images)#提取12层cls特征，变成(64,12*768)=(64,9216)
     cls_features = features[:, -768:] # the feature of classification token，ViT模型的最后一个分类token的特征768维，e_N^0
     
     """discrepancy loss for Eqn. (5)"""
     batch_std, batch_mean = torch.std_mean(features, dim=0) #OOD域数据特征的均值和方差
-    std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])#ID和OOD域数据特征MSE损失
-    # NOTE: $lambda$ should be 0.2 for ImageNet-R!!
-    discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    
+    # 根据use_pure_entropy参数决定是否计算discrepancy_loss
+    if not use_pure_entropy:
+        std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])#ID和OOD域数据特征MSE损失
+        # NOTE: $lambda$ should be 0.2 for ImageNet-R!!
+        discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    else:
+        discrepancy_loss = 0.0
     
     output = model.vit.head(cls_features)#通过分类头，将cls_features映射到分类输出
     
@@ -324,7 +331,7 @@ def forward_and_get_loss(images, model: AdaFormerViT, fitness_lambda, train_info
     if imagenet_mask is not None:
         output = output[:, imagenet_mask]#有需要可以利用imagenet_mask对输出进行筛选
     entropy_loss = softmax_entropy(output).sum()#对batch求和得到熵损失
-    loss = discrepancy_loss + entropy_loss
+    loss = entropy_loss if use_pure_entropy else (discrepancy_loss + entropy_loss)
     
     """activation shifting, Eqn. (7)"""
     if shift_vector is not None:

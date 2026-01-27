@@ -29,9 +29,10 @@ class FOA(nn.Module):
     FOA devises both input level and output level adaptation.
     It avoids modification to model weights and adapts in a backpropogation-free manner.
     """
-    def __init__(self, model:PromptViT, fitness_lambda=0.4):
+    def __init__(self, model:PromptViT, fitness_lambda=0.4, use_pure_entropy=False):
         super().__init__()
         self.fitness_lambda = fitness_lambda
+        self.use_pure_entropy = use_pure_entropy
 
         self.model = model
         self.es = self._init_cma() # initialization for CMA-ES
@@ -83,7 +84,7 @@ class FOA(nn.Module):
                                                         reshape_as(self.model.prompts).cuda())
             self.model.prompts.requires_grad_(False)
 
-            outputs, loss, batch_mean = forward_and_get_loss(x, self.model, self.fitness_lambda, self.train_info, shift_vector, self.imagenet_mask)
+            outputs, loss, batch_mean = forward_and_get_loss(x, self.model, self.fitness_lambda, self.train_info, shift_vector, self.imagenet_mask, self.use_pure_entropy)
             batch_means.append(batch_mean[-768:].unsqueeze(0))
             del batch_mean
 
@@ -197,14 +198,19 @@ def softmax_entropy(x: torch.Tensor) -> torch.Tensor:
 
 criterion_mse = nn.MSELoss(reduction='none').cuda()
 
-def forward_and_get_loss(images, model:PromptViT, fitness_lambda, train_info, shift_vector, imagenet_mask):
+def forward_and_get_loss(images, model:PromptViT, fitness_lambda, train_info, shift_vector, imagenet_mask, use_pure_entropy=False):
     features = model.layers_cls_features_with_prompts(images)
 
     """discrepancy loss for Eqn. (5)"""
     batch_std, batch_mean = torch.std_mean(features, dim=0)
-    std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])
-    # NOTE: $lambda$ should be 0.2 for ImageNet-R!!
-    discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    
+    # 根据use_pure_entropy参数决定是否计算discrepancy_loss
+    if not use_pure_entropy:
+        std_mse, mean_mse = criterion_mse(batch_std, train_info[0]), criterion_mse(batch_mean, train_info[1])
+        # NOTE: $lambda$ should be 0.2 for ImageNet-R!!
+        discrepancy_loss = fitness_lambda * (std_mse.sum() + mean_mse.sum()) * images.shape[0] / 64
+    else:
+        discrepancy_loss = 0.0
     
     cls_features = features[:, -768:] # the feature of classification token
     output = model.vit.head(cls_features)
@@ -213,7 +219,7 @@ def forward_and_get_loss(images, model:PromptViT, fitness_lambda, train_info, sh
     if imagenet_mask is not None:
         output = output[:, imagenet_mask]
     entropy_loss = softmax_entropy(output).sum()
-    loss = discrepancy_loss + entropy_loss
+    loss = entropy_loss if use_pure_entropy else (discrepancy_loss + entropy_loss)
     
     """activation shifting, Eqn. (7)"""
     if shift_vector is not None:

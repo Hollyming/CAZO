@@ -222,6 +222,8 @@ def get_args():
     # 添加CAZO相关参数
     parser.add_argument('--nu', default=0.8, type=float, 
                        help='Decay factor for diagonal Hessian estimation in CAZO')
+    parser.add_argument('--use_pure_entropy', default=False, action='store_true',
+                       help='If set, only use entropy loss without mse loss in CAZO')
 
     return parser.parse_args()
 
@@ -351,6 +353,7 @@ if __name__ == '__main__':
             optimizer_type=args.optimizer,
             beta=args.beta,
             nu=args.nu,
+            use_pure_entropy=args.use_pure_entropy,
         )
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
@@ -378,7 +381,8 @@ if __name__ == '__main__':
             pertub=args.pertub,
             epsilon=args.epsilon if hasattr(args, 'epsilon') else 0.1,
             optimizer_type=args.optimizer,
-            beta=args.beta
+            beta=args.beta,
+            use_pure_entropy=args.use_pure_entropy,
         )
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
@@ -407,7 +411,7 @@ if __name__ == '__main__':
         adapt_model = tent.Tent(net, optimizer)
     elif args.algorithm == 'foa':
         net = PromptViT(net, args.num_prompts).cuda()
-        adapt_model = FOA(net, args.fitness_lambda)
+        adapt_model = FOA(net, args.fitness_lambda, args.use_pure_entropy)
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'foa_resnet':
