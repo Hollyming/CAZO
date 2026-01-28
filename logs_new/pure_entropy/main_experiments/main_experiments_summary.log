@@ -1,0 +1,32 @@
+Main Experiments Started at Tue 27 Jan 2026 11:13:18 AM CST
+Architectures: vit_base
+Algorithms: zo_base foa
+Seeds: 42 2020 2025 1234 888
+GPU Count: 7
+GPU IDs: 0 1 2 3 4 5 6
+Total experiments: 10
+============================================
+Experiment 0 (zo_base, vit_base, seed 42) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 0
+Experiment 1 (zo_base, vit_base, seed 2020) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 1
+Experiment 2 (zo_base, vit_base, seed 2025) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 2
+Experiment 3 (zo_base, vit_base, seed 1234) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 3
+Experiment 4 (zo_base, vit_base, seed 888) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 4
+Experiment 5 (foa, vit_base, seed 42) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 5
+Experiment 6 (foa, vit_base, seed 2020) started at: Tue 27 Jan 2026 11:13:18 AM CST on GPU 6
+Experiment 6 (foa, vit_base, seed 2020) completed successfully at: Wed 28 Jan 2026 02:01:09 AM CST
+Experiment 5 (foa, vit_base, seed 42) completed successfully at: Wed 28 Jan 2026 03:02:41 AM CST
+Experiment 3 (zo_base, vit_base, seed 1234) completed successfully at: Wed 28 Jan 2026 07:19:43 AM CST
+Experiment 2 (zo_base, vit_base, seed 2025) completed successfully at: Wed 28 Jan 2026 07:33:31 AM CST
+Experiment 9 (foa, vit_base, seed 888) started at: Wed 28 Jan 2026 07:33:31 AM CST on GPU 2
+Experiment 4 (zo_base, vit_base, seed 888) completed successfully at: Wed 28 Jan 2026 07:45:34 AM CST
+Experiment 0 (zo_base, vit_base, seed 42) completed successfully at: Wed 28 Jan 2026 08:23:16 AM CST
+Experiment 7 (foa, vit_base, seed 2025) started at: Wed 28 Jan 2026 08:23:16 AM CST on GPU 0
+Experiment 1 (zo_base, vit_base, seed 2020) completed successfully at: Wed 28 Jan 2026 08:33:43 AM CST
+Experiment 8 (foa, vit_base, seed 1234) started at: Wed 28 Jan 2026 08:33:43 AM CST on GPU 1
+Experiment 9 (foa, vit_base, seed 888) completed successfully at: Wed 28 Jan 2026 09:53:36 PM CST
+Experiment 7 (foa, vit_base, seed 2025) completed successfully at: Wed 28 Jan 2026 11:13:45 PM CST
+Experiment 8 (foa, vit_base, seed 1234) completed successfully at: Wed 28 Jan 2026 11:31:40 PM CST
+
+All experiments completed at Wed 28 Jan 2026 11:31:40 PM CST
+Results saved to: /home/zjm/Workspace/CAZO/outputs_new/pure_entropy/main_experiments
+Logs saved to: /home/zjm/Workspace/CAZO/logs_new/pure_entropy/main_experiments
