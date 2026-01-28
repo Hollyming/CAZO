@@ -57,8 +57,13 @@ def validate_adapt(val_loader, model, args, writer):
         [batch_time, top1, top5],
         prefix='Test: ')
     
+    # 判断是否是微调算法（需要标签）
+    is_finetune = args.algorithm in ['bp_adapter_ft', 'zo_base_ft', 'cazo_ft']
+    
     outputs_list, targets_list = [], []
-    with torch.no_grad():
+    # 微调算法需要梯度
+    context_manager = torch.no_grad() if not is_finetune else torch.enable_grad()
+    with context_manager:
         end = time.time()
         total_batches = len(val_loader)
         for i, dl in enumerate(val_loader):
@@ -68,8 +73,11 @@ def validate_adapt(val_loader, model, args, writer):
             if torch.cuda.is_available():
                 target = target.cuda()
             
-            # 前向传播
-            output = model(images)
+            # 前向传播（微调算法需要传入标签）
+            if is_finetune:
+                output = model(images, target)
+            else:
+                output = model(images)
             
             # 获取当前损失值（从不同算法模型中）
             current_loss = None
@@ -228,6 +236,10 @@ def get_args():
     # 添加CAZO_freq相关参数
     parser.add_argument('--tau', default=1, type=int,
                        help='Update frequency for D matrix in CAZO_Freq (D is updated every tau steps)')
+    
+    # 添加多epoch支持
+    parser.add_argument('--num_epochs', default=1, type=int,
+                       help='Number of epochs for continuous test-time adaptation (CTTA) or fine-tuning')
 
     return parser.parse_args()
 
@@ -392,6 +404,63 @@ if __name__ == '__main__':
         )
         _, train_loader = obtain_train_loader(args)
         adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'bp_adapter':
+        from tta_library.bp_adapter import BP_Adapter
+        net = wrap_model_with_adapter(net, args)
+        adapt_model = BP_Adapter(
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            optimizer_type=args.optimizer,
+            momentum=args.momentum,
+            use_pure_entropy=args.use_pure_entropy,
+        )
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'bp_adapter_ft':
+        from tta_library.bp_adapter_ft import BP_Adapter_FT
+        net = wrap_model_with_adapter(net, args)
+        adapt_model = BP_Adapter_FT(
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            optimizer_type=args.optimizer,
+            momentum=args.momentum,
+            use_pure_ce=args.use_pure_entropy,  # 微调版本使用use_pure_ce
+        )
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'zo_base_ft':
+        from tta_library.zo_base_ft import ZO_Base_FT
+        net = wrap_model_with_adapter(net, args)
+        adapt_model = ZO_Base_FT(
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            pertub=args.pertub,
+            epsilon=args.epsilon,
+            optimizer_type=args.optimizer,
+            beta=args.beta,
+            use_pure_ce=args.use_pure_entropy,
+        )
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
+    elif args.algorithm == 'cazo_ft':
+        from tta_library.CAZO_ft import CAZO_FT
+        net = wrap_model_with_adapter(net, args)
+        adapt_model = CAZO_FT(
+            model=net,
+            fitness_lambda=args.fitness_lambda,
+            lr=args.lr,
+            pertub=args.pertub,
+            epsilon=args.epsilon,
+            optimizer_type=args.optimizer,
+            beta=args.beta,
+            nu=args.nu,
+            use_pure_ce=args.use_pure_entropy,
+        )
+        _, train_loader = obtain_train_loader(args)
+        adapt_model.obtain_origin_stat(train_loader)
     elif args.algorithm == 'zo_base':
         from tta_library.zo_base import ZO_Base
         net = wrap_model_with_adapter(net, args)
@@ -512,36 +581,65 @@ if __name__ == '__main__':
 
 
     corrupt_acc, corrupt_ece = [], []
-    for corrupt in corruptions:
-        args.corruption = corrupt
-        logger.info(args.corruption)
-
-        if args.corruption == 'rendition':
-            adapt_model.imagenet_mask = imagenet_r_mask
-        else:
-            adapt_model.imagenet_mask = None
-
-        val_dataset, val_loader = prepare_test_data(args)
-
-        torch.cuda.empty_cache()
-        top1, top5, ece_loss = validate_adapt(val_loader, adapt_model, args, writer)
-        logger.info(f"Under shift type {args.corruption} After {args.algorithm} Top-1 Accuracy: {top1:.6f} and Top-5 Accuracy: {top5:.6f} and ECE: {ece_loss:.6f}")
-        corrupt_acc.append(top1)
-        corrupt_ece.append(ece_loss)
+    
+    # 多epochs循环（支持CTTA和微调）
+    num_epochs = args.num_epochs if hasattr(args, 'num_epochs') else 1
+    logger.info(f'Running {num_epochs} epoch(s) with continue_learning={args.continue_learning}')
+    
+    for epoch in range(num_epochs):
+        logger.info(f'\n========== Epoch {epoch + 1}/{num_epochs} ==========')
+        epoch_acc, epoch_ece = [], []
         
-        logger.info(f'mean acc of corruption: {sum(corrupt_acc)/len(corrupt_acc) if len(corrupt_acc) else 0}')
-        logger.info(f'mean ece of corruption: {sum(corrupt_ece)/len(corrupt_ece)*100 if len(corrupt_ece) else 0}')
-        logger.info(f'corrupt acc list: {[_.item() for _ in corrupt_acc]}')
-        logger.info(f'corrupt ece list: {[_*100 for _ in corrupt_ece]}')
+        for corrupt in corruptions:
+            args.corruption = corrupt
+            logger.info(args.corruption)
 
-        # reset model before adapting on the next domain
-        if args.algorithm == 'no_adapt':
-            continue
-        elif args.continue_learning:
-            continue
-        else:
-            print("Resetting model to original weights...")
+            if args.corruption == 'rendition':
+                adapt_model.imagenet_mask = imagenet_r_mask
+            else:
+                adapt_model.imagenet_mask = None
+
+            val_dataset, val_loader = prepare_test_data(args)
+
+            torch.cuda.empty_cache()
+            top1, top5, ece_loss = validate_adapt(val_loader, adapt_model, args, writer)
+            logger.info(f"[Epoch {epoch+1}] Under shift type {args.corruption} After {args.algorithm} Top-1 Accuracy: {top1:.6f} and Top-5 Accuracy: {top5:.6f} and ECE: {ece_loss:.6f}")
+            epoch_acc.append(top1)
+            epoch_ece.append(ece_loss)
+            
+            # 记录当前epoch的统计
+            logger.info(f'[Epoch {epoch+1}] mean acc of corruption: {sum(epoch_acc)/len(epoch_acc) if len(epoch_acc) else 0}')
+            logger.info(f'[Epoch {epoch+1}] mean ece of corruption: {sum(epoch_ece)/len(epoch_ece)*100 if len(epoch_ece) else 0}')
+
+            # reset model before adapting on the next domain
+            if args.algorithm == 'no_adapt':
+                continue
+            elif args.continue_learning:
+                continue  # 保持学习状态，继续下一个corruption
+            else:
+                print("Resetting model to original weights...")
+                adapt_model.reset()  # 每个corruption后重置
+        
+        # 保存每个epoch的结果
+        corrupt_acc.extend(epoch_acc)
+        corrupt_ece.extend(epoch_ece)
+        
+        # epoch结束后的统计
+        logger.info(f'\n[Epoch {epoch+1} Summary]')
+        logger.info(f'Epoch {epoch+1} mean acc: {sum(epoch_acc)/len(epoch_acc) if len(epoch_acc) else 0:.4f}')
+        logger.info(f'Epoch {epoch+1} mean ece: {sum(epoch_ece)/len(epoch_ece)*100 if len(epoch_ece) else 0:.4f}')
+        logger.info(f'Epoch {epoch+1} acc list: {[_.item() for _ in epoch_acc]}')
+        logger.info(f'Epoch {epoch+1} ece list: {[_*100 for _ in epoch_ece]}')
+        
+        # 如果不是continue_learning模式，每个epoch结束后重置模型
+        if not args.continue_learning and epoch < num_epochs - 1:
+            logger.info(f'Resetting model before epoch {epoch+2}')
             adapt_model.reset()
+    
+    # 所有epochs结束后的总体统计
+    logger.info(f'\n========== Final Summary (All {num_epochs} Epoch(s)) ==========')
+    logger.info(f'Overall mean acc: {sum(corrupt_acc)/len(corrupt_acc) if len(corrupt_acc) else 0:.4f}')
+    logger.info(f'Overall mean ece: {sum(corrupt_ece)/len(corrupt_ece)*100 if len(corrupt_ece) else 0:.4f}')
     
     # 结束训练时关闭 TensorBoard writer
     writer.close()  
