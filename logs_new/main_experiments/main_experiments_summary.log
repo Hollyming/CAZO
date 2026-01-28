@@ -21,3 +21,12 @@ Experiment 4 (cazo, deit_base, seed 888) completed successfully at: 2026年 01�
 Experiment 9 (cazo, swin_tiny, seed 888) started at: 2026年 01月 25日 星期日 20:49:46 CST on GPU 7
 Experiment 3 (cazo, deit_base, seed 1234) completed successfully at: 2026年 01月 25日 星期日 21:31:56 CST
 Experiment 8 (cazo, swin_tiny, seed 1234) started at: 2026年 01月 25日 星期日 21:31:56 CST on GPU 6
+Experiment 7 (cazo, swin_tiny, seed 2025) completed successfully at: 2026年 01月 26日 星期一 15:58:07 CST
+Experiment 6 (cazo, swin_tiny, seed 2020) completed successfully at: 2026年 01月 26日 星期一 17:04:51 CST
+Experiment 9 (cazo, swin_tiny, seed 888) completed successfully at: 2026年 01月 26日 星期一 21:05:50 CST
+Experiment 5 (cazo, swin_tiny, seed 42) completed successfully at: 2026年 01月 26日 星期一 22:03:42 CST
+Experiment 8 (cazo, swin_tiny, seed 1234) completed successfully at: 2026年 01月 26日 星期一 23:14:30 CST
+
+All experiments completed at 2026年 01月 26日 星期一 23:14:30 CST
+Results saved to: /home/zjm/Workspace/CAZO/outputs_new/main_experiments
+Logs saved to: /home/zjm/Workspace/CAZO/logs_new/main_experiments
