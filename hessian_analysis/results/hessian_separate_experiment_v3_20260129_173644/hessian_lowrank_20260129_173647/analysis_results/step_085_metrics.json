@@ -1,0 +1,17 @@
+{
+  "step": 85,
+  "eigenvalues": "[ 9.266051e-02  7.130300e-02  5.689276e-02 ... -4.441042e-09 -5.951270e-09\n -6.305595e-09]",
+  "metrics": {
+    "explained_variance_ratios": {
+      "top_5": "0.56218326",
+      "top_10": "0.7409262",
+      "top_20": "0.89688826",
+      "top_50": "0.9996693"
+    },
+    "effective_ranks": "19.713472",
+    "spectral_norms": "0.09266051",
+    "nuclear_norms": "0.5400228",
+    "condition_numbers": "44483.44"
+  },
+  "timestamp": "2026-01-29T17:42:25.814351"
+}

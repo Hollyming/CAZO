@@ -1,0 +1,35 @@
+Hessian Eigenvalue Distribution Analysis Report (with Heatmaps)
+==================================================
+
+实验时间: 2026-01-29 17:48:13
+总步骤数: 100
+特征值历史记录数: 100
+
+生成的图表文件:
+  1. eigenvalue_decay_pattern.png
+  2. cumulative_explained_variance.png
+  3. final_eigenvalue_distribution.png
+  4. effective_rank_evolution.png
+
+生成的Hessian热力图:
+  - hessian_heatmap_step_000.png
+  - hessian_heatmap_step_025.png
+  - hessian_heatmap_step_050.png
+  - hessian_heatmap_step_075.png
+  - hessian_heatmap_step_099.png
+  - hessian_heatmaps_grid.png
+
+特征值衰减分析:
+  步骤 0: 最大特征值=9.65e-02, 最小特征值=-3.48e-09
+  步骤 25: 最大特征值=7.64e-02, 最小特征值=-5.00e-09
+  步骤 50: 最大特征值=5.48e-02, 最小特征值=-3.10e-09
+  步骤 75: 最大特征值=8.36e-02, 最小特征值=-3.45e-09
+  步骤 99: 最大特征值=7.00e-02, 最小特征值=-3.99e-09
+
+有效秩分析:
+  平均有效秩: 21.22
+  最小有效秩: 15.458547592163086
+  最大有效秩: 29.118452072143555
+  有效秩标准差: 2.70
+
+结论: Hessian矩阵在不同优化步骤间保持稳定的低秩结构；热度图展示了整体结构与强度分布。
