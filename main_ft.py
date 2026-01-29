@@ -121,9 +121,11 @@ def validate_adapt(val_loader, model, args, writer):
                 print(f"Remaining time: {remaining_time_str} ")
                 logger.info(progress.display(i))
 
-        # 计算ECE
-        outputs_list = torch.cat(outputs_list, dim=0).numpy()
-        targets_list = torch.cat(targets_list, dim=0).numpy()
+        # 计算ECE（detach以移除梯度信息）
+        outputs_list = torch.cat(outputs_list, dim=0).detach().numpy()
+        targets_list = torch.cat(targets_list, dim=0).detach().numpy()
+        # outputs_list = torch.cat(outputs_list, dim=0).numpy()
+        # targets_list = torch.cat(targets_list, dim=0).numpy()
         
         logits = args.algorithm != 'lame' # only lame outputs probability
         ece_avg = ECELoss().loss(outputs_list, targets_list, logits=logits) # calculate ECE
