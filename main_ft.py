@@ -610,6 +610,8 @@ if __name__ == '__main__':
             # 记录当前epoch的统计
             logger.info(f'[Epoch {epoch+1}] mean acc of corruption: {sum(epoch_acc)/len(epoch_acc) if len(epoch_acc) else 0}')
             logger.info(f'[Epoch {epoch+1}] mean ece of corruption: {sum(epoch_ece)/len(epoch_ece)*100 if len(epoch_ece) else 0}')
+            logger.info(f'corrupt acc list: {[_.item() for _ in epoch_acc]}')
+            logger.info(f'corrupt ece list: {[_*100 for _ in epoch_ece]}')
 
             # reset model before adapting on the next domain
             if args.algorithm == 'no_adapt':
