@@ -1,0 +1,50 @@
+================================================================================
+Ablation Results for vitbase
+================================================================================
+
+adapter_layer=0 (transformer_block=1): accuracy=62.28399658203125%, ece=4.548757492981852%
+adapter_layer=1 (transformer_block=2): accuracy=62.525997161865234%, ece=4.126161475144328%
+adapter_layer=2 (transformer_block=3): accuracy=62.69199752807617%, ece=3.622022300109267%
+adapter_layer=3 (transformer_block=4): accuracy=62.66999816894531%, ece=3.281721401348709%
+adapter_layer=4 (transformer_block=5): accuracy=61.53999710083008%, ece=2.9953716194108146%
+adapter_layer=5 (transformer_block=6): accuracy=60.115997314453125%, ece=2.9836897301003344%
+adapter_layer=6 (transformer_block=7): accuracy=58.78199768066406%, ece=2.528819815129043%
+adapter_layer=7 (transformer_block=8): accuracy=58.42599868774414%, ece=4.146211555331945%
+adapter_layer=8 (transformer_block=9): accuracy=57.95399856567383%, ece=5.166624382264913%
+adapter_layer=9 (transformer_block=10): accuracy=57.72999954223633%, ece=5.318510065734388%
+adapter_layer=10 (transformer_block=11): accuracy=57.44199752807617%, ece=6.209549927778543%
+adapter_layer=11 (transformer_block=12): accuracy=57.40999984741211%, ece=8.179434215195476%
+
+================================================================================
+Ablation Results for deit_base
+================================================================================
+
+adapter_layer=0 (transformer_block=1): accuracy=53.74867248535156%, ece=6.2926587467620765%
+adapter_layer=1 (transformer_block=2): accuracy=57.24346923828125%, ece=5.028548531977336%
+adapter_layer=2 (transformer_block=3): accuracy=58.09226608276367%, ece=4.689044599061708%
+adapter_layer=3 (transformer_block=4): accuracy=58.796932220458984%, ece=4.592287967781226%
+adapter_layer=4 (transformer_block=5): accuracy=58.5753288269043%, ece=4.299523636477192%
+adapter_layer=5 (transformer_block=6): accuracy=56.89826965332031%, ece=6.506904188411931%
+adapter_layer=6 (transformer_block=7): accuracy=53.23346710205078%, ece=8.297304206976541%
+adapter_layer=7 (transformer_block=8): accuracy=48.795467376708984%, ece=12.422877269699919%
+adapter_layer=8 (transformer_block=9): accuracy=46.596134185791016%, ece=17.116084020729858%
+adapter_layer=9 (transformer_block=10): accuracy=47.61146926879883%, ece=16.91583296856756%
+adapter_layer=10 (transformer_block=11): accuracy=47.80960464477539%, ece=18.03508385720526%
+adapter_layer=11 (transformer_block=12): accuracy=47.29746627807617%, ece=27.04893104237541%
+
+================================================================================
+Ablation Results for swin_tiny
+================================================================================
+
+adapter_layer=0 (transformer_block=1): accuracy=37.902408599853516%, ece=11.165161294790106%
+adapter_layer=1 (transformer_block=2): accuracy=39.1070671081543%, ece=11.605148342296236%
+adapter_layer=2 (transformer_block=3): accuracy=42.15279769897461%, ece=10.594078545843065%
+adapter_layer=3 (transformer_block=4): accuracy=42.46266555786133%, ece=10.192294350293768%
+adapter_layer=4 (transformer_block=5): accuracy=43.83866882324219%, ece=8.591385052934786%
+adapter_layer=5 (transformer_block=6): accuracy=41.97586441040039%, ece=6.109830384766061%
+adapter_layer=6 (transformer_block=7): accuracy=39.766536712646484%, ece=10.232347473283236%
+adapter_layer=7 (transformer_block=8): accuracy=36.60826873779297%, ece=10.017891843744367%
+adapter_layer=8 (transformer_block=9): accuracy=34.319602966308594%, ece=17.45160421223268%
+adapter_layer=9 (transformer_block=10): accuracy=32.7961311340332%, ece=18.507886304343243%
+adapter_layer=10 (transformer_block=11): accuracy=33.360931396484375%, ece=23.116346730212621%
+adapter_layer=11 (transformer_block=12): accuracy=10.089869499206543%, ece=19.951989831950019%
