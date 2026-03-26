@@ -1,4 +1,11 @@
-# CAZO: Test-Time Adaptation with Curvature-Aware Zeroth-Order Optimization
+# [🏆CVPR'26] CAZO: Test-Time Adaptation with Curvature-Aware Zeroth-Order Optimization
+
+<div align="center">
+  <h2 align="center">
+  <a href="https://github.com/Hollyming/CAZO" target='_blank' style="text-decoration: none;"><img src="https://visitor-badge.laobi.icu/badge?page_id=Hollyming/CAZO"></a>
+  <a href="https://github.com/Hollyming/CAZO" target='_blank' style="text-decoration: none;"><img src="https://img.shields.io/github/stars/Hollyming/CAZO"></a>
+  <a href=""><img src="https://img.shields.io/badge/License-MIT-green.svg"></a>
+</div>
 
 This repository contains the official implementation of **CAZO**, a forward-only test-time adaptation framework that leverages curvature-aware zeroth-order optimization.
 
