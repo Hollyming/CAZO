@@ -99,11 +99,6 @@ More scripts are available in [scripts/](scripts/).
 
 ## 📊 Main Results
 
-> Following your request:
-> - Results are separated into **TTA** and **CTTA**
-> - **ECE is removed**
-> - **Memory uses paper-reported memory metric** (please fill final values from camera-ready tables)
-
 ### 1) TTA Results (ImageNet-C, severity level 5)
 
 | Method | Top-1 Acc (%) | Memory (MB) |
@@ -143,13 +138,11 @@ More scripts are available in [scripts/](scripts/).
 
 ## 📝 Citation (CVPR 2026)
 
-> **TODO**: we will update with official BibTeX after publication. The current bib reference is in non-standard format. 
-
 ```bibtex
 @inproceedings{zhang2026curvature,
   title     = {Curvature-Aware Zeroth-Order Optimization for Memory-Efficient Test-Time Adaptation},
-  author    = {Author1 and Author2 and Author3 and ...},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  author    = {Zhang, Junming and Yin, Shuyu and Liu, Peilin and Ying, Rendong and Wen, Fei},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year      = {2026}
 }
 ```
