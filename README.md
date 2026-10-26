@@ -140,12 +140,11 @@ More scripts are available in [scripts/](scripts/).
 
 ```bibtex
 @inproceedings{zhang2026curvature,
-  title     = {Curvature-Aware Zeroth-Order Optimization for Memory-Efficient Test-Time Adaptation},
-  author    = {Zhang, Junming and Yin, Shuyu and Liu, Peilin and Ying, Rendong and Wen, Fei},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  month     = {June},
-  year      = {2026},
-  pages     = {836-846}
+  title={Curvature-Aware Zeroth-Order Optimization for Memory-Efficient Test-Time Adaptation},
+  author={Zhang, Junming and Yin, Shuyu and Liu, Peilin and Ying, Rendong and Wen, Fei},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={836--846},
+  year={2026}
 }
 ```
 ---
